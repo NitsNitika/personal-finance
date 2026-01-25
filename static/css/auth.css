@@ -1,0 +1,71 @@
+/* ===== AUTH PAGES (LOGIN / LOGOUT) ===== */
+
+body.auth-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #eef2ff, #ffffff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Card */
+.auth-card {
+  width: 480px;
+  background: #ffffff;
+  border-radius: 22px;
+  padding: 50px 40px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+/* Headings */
+.auth-card h1 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.auth-card p {
+  font-size: 16px;
+  color: #6b7280;
+  margin-bottom: 36px;
+}
+
+/* Primary button */
+.auth-btn {
+  width: 100%;
+  padding: 18px;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 16px;
+  background: white;
+  border: 3px solid #1f3c88;
+  color: #1f3c88;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.auth-btn:hover {
+  background: #1f3c88;
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Cancel button */
+.auth-cancel {
+  margin-top: 26px;
+  display: inline-block;
+  padding: 14px 30px;
+  border-radius: 14px;
+  border: 3px solid #1f3c88;
+  color: #1f3c88;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.auth-cancel:hover {
+  background: #1f3c88;
+  color: white;
+}

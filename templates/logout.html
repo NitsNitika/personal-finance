@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirm Logout</title>
+
+    <!-- AUTH CSS ONLY -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+</head>
+
+<body class="auth-page">
+
+<div class="auth-container">
+    <div class="auth-card">
+
+        <h1>Confirm Logout</h1>
+
+        <p>
+            Are you sure you want to exit your account?
+        </p>
+
+        <form method="POST">
+            <button type="submit" class="auth-btn">
+                Yes, Logout
+            </button>
+        </form>
+
+        <a href="{{ url_for('dashboard') }}" class="auth-cancel">
+            Cancel
+        </a>
+
+    </div>
+</div>
+
+</body>
+</html>

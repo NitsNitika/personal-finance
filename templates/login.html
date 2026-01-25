@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h2>Login</h2>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <p class="error-text">{{ messages[0] }}</p>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+                <input type="email" name="email" placeholder="Email" required>
+
+                <!-- Password with eye icon -->
+                <div class="password-wrapper">
+                    <input 
+                        type="password" 
+                        name="password" 
+                        id="login_password" 
+                        placeholder="Password" 
+                        required
+                    >
+                    <span 
+                        class="toggle-password" 
+                        onclick="togglePassword('login_password')"
+                    >👁️</span>
+                </div>
+
+                <button type="submit">Login</button>
+            </form>
+
+            <a href="{{ url_for('forgot') }}">Forgot Password?</a>
+
+            <p>
+                Don’t have an account? 
+                <a href="{{ url_for('register') }}">Register</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Show / Hide Password Script -->
+    <script>
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            input.type = input.type === "password" ? "text" : "password";
+        }
+    </script>
+
+</body>
+</html>

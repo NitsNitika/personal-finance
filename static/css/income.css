@@ -1,0 +1,316 @@
+/* ================= GLOBAL ================= */
+
+body {
+  background: #f3f5fb;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+}
+
+.container {
+  width: 90%;
+  margin: 30px auto;
+}
+
+/* ================= HEADER ================= */
+
+.page-header {
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.breadcrumb {
+  font-size: 20px;
+  color: #8b90a0;
+  margin-bottom: 10px;
+}
+
+.page-header h1 {
+  font-size: 38px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.subtitle {
+  color: #6b7280;
+  margin-top: 8px;
+  font-size: 18px;
+}
+
+.btn-back {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #5b7cfa, #4b6cfb);
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* ================= ACTION CARDS ================= */
+
+.card-grid.exact-design {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.design-card {
+  position: relative;
+  height: 210px;
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.12);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 18px;
+  overflow: hidden;
+}
+
+.design-card.add {
+  background: linear-gradient(180deg, #f4f8ff, #ffffff);
+}
+
+.design-card.update {
+  background: linear-gradient(180deg, #efe9ff, #ffffff);
+}
+
+.design-card.delete {
+  background: linear-gradient(180deg, #fff0f0, #ffffff);
+}
+
+.design-btn {
+  align-self: flex-start;
+  height: 44px;
+  padding: 0 26px;
+  border-radius: 999px;
+  font-weight: 600;
+  text-decoration: none;
+  color: white;
+  display: inline-flex;
+  align-items: center;
+}
+
+.design-btn.blue {
+  background: linear-gradient(135deg, #4f6ef7, #6ea8ff);
+}
+
+.design-btn.purple {
+  background: linear-gradient(135deg, #7c6df0, #bfa9ff);
+}
+
+.design-btn.red {
+  background: linear-gradient(135deg, #c55a5a, #e97a7a);
+}
+
+.card-illustration {
+  position: absolute;
+  right: 30px;
+  bottom: 20px;
+  max-width: 160px;
+  opacity: 0.95;
+  pointer-events: none;
+}
+
+/* ================= SUMMARY CARD ================= */
+
+.summary-card {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.08);
+}
+
+.summary-header h2 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.summary-subtitle {
+  color: #6b7280;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.amount {
+  font-size: 38px;
+  font-weight: 700;
+  margin: 12px 0;
+}
+
+.growth {
+  color: #16a34a;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* ================= 🔥 FINAL FIXED LAYOUT ================= */
+
+.summary-content-grid {
+  display: grid;
+  grid-template-columns: 2.3fr 1fr;
+  gap: 40px;                 /* ✅ ONLY space between chart & table */
+  margin-top: 32px;
+  width: 100%;
+}
+
+.summary-content-grid > div {
+  min-width: 0;              /* prevents overflow */
+}
+
+/* LEFT: CHART (NO EXTRA SPACE) */
+.chart-only {
+  padding: 0;
+  margin: 0;
+  background: transparent;
+}
+
+.chart-only canvas {
+  width: 100%;
+  height: 360px;
+  display: block;
+}
+
+/* RIGHT: RECENT INCOME CARD */
+.recent-wrapper {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.08);
+  margin-top: -40px;  
+}
+
+/* ================= TABLE ================= */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th {
+  text-align: left;
+  font-size: 14px;
+  color: #6b7280;
+  padding-bottom: 12px;
+}
+
+td {
+  padding: 10px 0;
+  font-size: 15px;
+}
+
+.view-all {
+  display: inline-block;
+  margin-top: 14px;
+  font-weight: 600;
+  color: #4f6ef7;
+  text-decoration: none;
+}
+
+/* ================= TOAST ================= */
+
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+}
+
+.toast.success {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  padding: 16px 22px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: 0 20px 40px rgba(34,197,94,0.35);
+}
+/* ===== REAL FIX FOR YOUR ISSUE ===== */
+
+.chart-only {
+  width: 100%;
+}
+
+.chart-inner {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* FORCE chart to respect container */
+.chart-inner canvas {
+  width: 100% !important;
+  height: 360px !important;
+  display: block;
+}
+/* 🔥 FORCE VISIBLE GAP BETWEEN CHART & TABLE */
+.chart-only {
+  margin-right: 32px;   /* creates visible space */
+}
+
+/* keep recent card unchanged */
+.recent-wrapper {
+  margin-left: 0;
+}
+/* 🔥 HARD FIX: force chart container height */
+.chart-only {
+  width: 100%;
+}
+
+.chart-box {
+  width: 100%;
+  height: 360px;          /* ⬅️ THIS IS CRITICAL */
+  position: relative;
+}
+
+#monthlyIncomeChart {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+/* FIX chart overlap */
+.chart-box {
+  height: 360px;        /* REQUIRED */
+  width: 100%;
+  margin-top: 24px;    /* pushes chart below amount text */
+}
+
+.chart-box canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+.amount {
+  margin-bottom: 16px;
+}
+
+.growth {
+  margin-bottom: 12px;
+}
+/* 🔥 FIX text & chart overlap */
+.summary-metrics {
+  position: relative;
+  z-index: 2;              /* keeps text ABOVE chart */
+  margin-bottom: 24px;    /* space before chart */
+}
+
+.chart-only {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ensure chart never climbs up */
+.chart-box {
+  height: 360px;
+  margin-top: 16px;
+}
+
+.chart-box canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}

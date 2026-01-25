@@ -1,0 +1,738 @@
+ * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #eef4f8, #ffffff);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+ /* Main Card  */
+.auth-card {
+    width: 460px;
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 45px 40px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+    text-align: center;
+    position: relative;
+    z-index: 5;
+}
+
+/* Title */
+.auth-card h2 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 30px;
+}
+
+/* Inputs */
+.auth-card input {
+    width: 100%;
+    padding: 16px;
+    margin: 12px 0;
+    border-radius: 14px;
+    border: 1px solid #cfdcf0;
+    background: #f3f7ff;
+    font-size: 16px;
+    outline: none;
+}
+
+.auth-card input:focus {
+    border-color: #1f3c88;
+    background: #ffffff;
+}
+
+/* Buttons */
+.auth-card button {
+    width: 100%;
+    background: #1f3c88;
+    color: #fff;
+    border: none;
+    padding: 14px;
+    margin-top: 20px;
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.auth-card button:hover {
+    background: #162e66;
+}
+
+/* Links */
+.auth-card a {
+    display: inline-block;
+    margin-top: 18px;
+    color: #4a3aff;
+    text-decoration: none;
+    font-weight: 600;
+    cursor: pointer;
+    pointer-events: auto;
+    position: relative;
+    z-index: 20;
+}
+
+.auth-card a:hover {
+    text-decoration: underline;
+}
+
+/* Bottom text */
+.auth-card p {
+    margin-top: 15px;
+    font-size: 15px;
+    color: #333;
+}
+
+/* Error */
+.error-text {
+    color: red;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+body * {
+    pointer-events: auto !important;
+}
+
+.auth-card, 
+.auth-card * {
+    position: relative;
+    z-index: 9999;
+}
+/* FORCE LINKS TO BE CLICKABLE */
+.auth-container,
+.auth-card,
+.auth-card * {
+    position: relative;
+    z-index: 9999;
+    pointer-events: auto !important;
+}
+/* Professional OTP Display Box */
+.dev-box {
+    margin-top: 25px;
+    padding: 14px;
+    border-radius: 12px;
+    background: #f3f7ff;
+    border: 1px dashed #1f3c88;
+    text-align: center;
+}
+
+.dev-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f3c88;
+    margin-bottom: 6px;
+}
+
+.dev-otp {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f2f75;
+    letter-spacing: 3px;
+}
+
+.dev-note {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
+/* Developer Mode Preview Box */
+.dev-box {
+    margin-top: 25px;
+    padding: 16px;
+    border-radius: 12px;
+    background: #f1f6ff;
+    border: 1px solid #d5e0ff;
+    text-align: center;
+}
+
+.dev-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f3c88;
+    margin-bottom: 8px;
+}
+
+.dev-value {
+    font-size: 16px;
+    font-weight: bold;
+    color: #2b5cff;
+    word-break: break-all;
+    text-decoration: none;
+}
+
+.dev-value:hover {
+    text-decoration: underline;
+}
+.otp-timer {
+    margin-top: 14px;
+    font-size: 15px;
+    color: #333;
+    font-weight: 500;
+}
+
+#timer {
+    font-weight: 700;
+    color: #1f3c88;
+}
+.otp-timer {
+    margin-top: 14px;
+    font-size: 15px;
+    color: #444;
+    font-weight: 500;
+}
+
+#timer {
+    font-weight: 700;
+    color: #1f3c88;
+}
+
+.dev-box {
+    margin-top: 22px;
+    padding: 14px;
+    border-radius: 10px;
+    background: #f4f8ff;
+    border: 1px dashed #1f3c88;
+    text-align: center;
+}
+
+.dev-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1f3c88;
+    margin-bottom: 4px;
+}
+
+.dev-subtitle {
+    font-size: 13px;
+    color: #555;
+}
+
+.dev-value {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    margin-top: 6px;
+    color: #0b8043;
+}
+/* ---------- PROFILE PAGE ---------- */
+
+.profile-card {
+    padding-top: 35px;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.profile-avatar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.profile-avatar img {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.profile-name {
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 10px;
+}
+
+.profile-email {
+    font-size: 15px;
+    color: #555;
+    margin-bottom: 25px;
+}
+
+
+.btn-outline {
+    display: block;
+    padding: 12px;
+    border-radius: 12px;
+    border: 2px solid #1f3c88;
+    color: #1f3c88;
+    background: transparent;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-outline:hover {
+    background: #1f3c88;
+    color: #fff;
+}
+
+.btn-danger {
+    display: block;
+    padding: 12px;
+    border-radius: 12px;
+    background: #d9534f;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+/* ---------- PROFILE PAGE FIX ---------- */
+
+.profile-card {
+    padding-top: 40px;
+}
+
+.profile-title {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.profile-subtitle {
+    font-size: 15px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* Avatar */
+.profile-avatar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.avatar-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: #f0f4ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #1f3c88;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+/* User info */
+.profile-name {
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 10px;
+}
+
+.profile-email {
+    font-size: 15px;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+/* Actions */
+.profile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* Buttons */
+.btn-outline {
+    padding: 14px;
+    border-radius: 14px;
+    border: 2px solid #1f3c88;
+    color: #1f3c88;
+    background: transparent;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.btn-outline:hover {
+    background: #1f3c88;
+    color: #fff;
+}
+
+
+/* Logout default (ensure blue border & text) */
+.profile-actions .btn-danger {
+    background: #ffffff;
+    color: #1f3c88;
+    border: 2px solid #1f3c88;
+}
+
+/* Logout hover → RED border & text (no fill) */
+.profile-actions .btn-danger:hover {
+    background: #ffffff;   /* keep white */
+    color: #d9534f;        /* red text */
+    border-color: #d9534f; /* red border */
+}
+.profile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;              /* 👈 SAME SPACE BETWEEN ALL BOXES */
+    margin-top: 35px;
+}
+/* ===== Profile Action Buttons (Base Style) ===== */
+.profile-actions a {
+    display: block;
+    width: 100%;
+    text-align: center;
+
+    padding: 16px 20px;
+    border-radius: 14px;
+
+    font-size: 18px;
+    font-weight: 600;
+    text-decoration: none;
+
+    transition: all 0.3s ease;
+}
+
+/* Edit Profile */
+.btn-outline {
+    border: 2px solid #2d4bff;
+    color: #2d4bff;
+    background: #ffffff;
+}
+/* ===== SAME HOVER EFFECT FOR ALL PROFILE BOXES ===== */
+
+/* Change Password */
+.btn-primary {
+    border: 2px solid #1f3cff;
+    color: #1f3cff;
+    background: #ffffff;
+}
+
+/* Income Management */
+.income-link {
+    border: 2px solid #2d4bff;
+    color: #2d4bff;
+    background: #ffffff;
+}
+
+/* Logout */
+.btn-danger {
+    border: 2px solid #e74c3c;
+    color: #e74c3c;
+    background: #ffffff;
+}
+
+
+.profile-actions .btn-danger {
+    background: #ffffff;          /* white background */
+    color: #1f3c88;               /* BLUE TEXT */
+    border: 2px solid #d9534f;
+    transition: background 0.3s, color 0.3s;
+}
+
+.profile-actions .btn-danger:hover {
+    background: #d9534f;          /* red background */
+    color: #ffffff;               /* white text */
+}
+
+
+/* ===============================
+   LOGOUT BUTTON FINAL STYLE
+   =============================== */
+
+/* Default state */
+.profile-actions .btn-danger {
+    background: #ffffff;          /* white background */
+    color: #1f3c88;               /* blue text */
+    border: 2px solid #d9534f;    /* red border */
+    transition: background 0.3s, color 0.3s;
+}
+
+/* Hover state */
+.profile-actions .btn-danger:hover {
+    background: #d9534f;          /* red background */
+    color: #ffffff;               /* white text */
+    border-color: #d9534f;
+}
+
+.avatar-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.profile-avatar {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+
+.avatar-circle {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background: #f1f5ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #1f3c88;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    margin-bottom: 20px;
+}
+
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper input {
+    padding-right: 45px; /* space for eye icon */
+}
+
+.toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 14px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 18px;
+    color: #1f3c88;
+    user-select: none;
+}
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 45px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 18px;
+    opacity: 0.6;
+}
+
+.toggle-password:hover {
+    opacity: 1;
+}
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 50px;   /* space for eye */
+    position: relative;
+    z-index: 1;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 18px;
+    color: #777;
+    z-index: 5;            /* 🔥 THIS IS THE KEY */
+    pointer-events: auto; /* 🔥 ALLOW CLICK */
+}
+
+.toggle-password:hover {
+    color: #1e3a8a;
+}
+
+/* ===============================
+   CHANGE PASSWORD BUTTON
+   =============================== */
+
+.profile-actions .btn-primary {
+    background: #ffffff;          /* white background */
+    color: #1f3c88;               /* blue text */
+    border: 2px solid #1f3c88;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+/* ===== FIX CHANGE PASSWORD SIZE ===== */
+.profile-actions .btn-primary {
+    border: 2px solid #1f3c88;   /* SAME as Edit Profile */
+    background: #ffffff;
+    color: #1f3c88;
+    padding: 14px;               /* SAME padding */
+    border-radius: 14px;
+    box-sizing: border-box;      /* 🔥 prevents size change */
+}
+/* ===============================
+   UNIVERSAL SUBMIT BUTTON STYLE
+   =============================== */
+
+/* Default state */
+button[type="submit"] {
+    background: #ffffff;
+    color: #1f3c88;
+    border: 2px solid #1f3c88;
+    border-radius: 14px;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-sizing: border-box;   /* prevents size change */
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Hover state */
+button[type="submit"]:hover {
+    background: #1f3c88;
+    color: #ffffff;
+}
+
+/* OVERRIDE old danger styles (Yes, Logout included) */
+button.btn-danger {
+    background: #ffffff !important;
+    color: #1f3c88 !important;
+    border: 2px solid #1f3c88 !important;
+}
+
+/* ===== Income Management Link ===== */
+.income-link {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 14px 20px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d4bff;              /* Blue text */
+    background: #ffffff;         /* White background */
+    border: 2px solid #2d4bff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+/* ===============================
+   PROFILE ACTION BUTTONS (FINAL)
+   =============================== */
+
+.profile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.profile-actions a {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 18px;
+    font-weight: 600;
+    text-decoration: none;
+    background: #ffffff;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.btn-outline {
+    border: 2px solid #1f3c88;
+    color: #1f3c88;
+}
+
+.btn-primary {
+    border: 2px solid #1f3c88;
+    color: #1f3c88;
+}
+
+.income-link {
+    border: 2px solid #2d4bff;
+    color: #2d4bff;
+}
+
+.btn-danger {
+    border: 2px solid #d9534f;
+    color: #d9534f;
+}
+/* ===== Universal Hover (All Buttons) ===== */
+.profile-actions a:hover {
+    background: linear-gradient(135deg, #6f8cff, #8fd3f4);
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(111, 140, 255, 0.6); /* blue glow */
+    transform: translateY(-2px);
+}
+
+/* ===== Logout Hover (Red Glow Only) ===== */
+.profile-actions .btn-danger:hover {
+    background: linear-gradient(#d9534f); /* red background */
+    color: #ffffff;
+
+    box-shadow: 0 0 20px rgba(217, 83, 79, 0.7); /* 🔴 red glow */
+    transform: translateY(-2px);
+}
+/* REMOVE UNDERLINE FROM ALL BUTTON-LIKE LINKS */
+a,
+a:hover,
+a:focus,
+a:active {
+  text-decoration: none !important;
+}
+/* ===== PROFILE BUTTON TEXT COLOR FIX ===== */
+
+/* Normal state */
+.auth-card a,
+.auth-card a span,
+.auth-card a p {
+  color: #000 !important;          /* BLACK text */
+  text-decoration: none !important;
+}
+
+/* Hover state */
+.auth-card a:hover,
+.auth-card a:hover span,
+.auth-card a:hover p {
+  color: #000 !important;          /* STILL BLACK */
+  text-decoration: none !important;
+}
+.profile-btn,
+.profile-btn span {
+  color: #000 !important;
+  text-decoration: none !important;
+ } 
+
+.profile-btn:hover,
+.profile-btn:hover span {
+  color: #000 !important;
+  text-decoration: none !important;
+}
+
+
+ 

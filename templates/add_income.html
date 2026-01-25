@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Income</title>
+
+    <!-- SAME CSS AS MANAGE INCOME -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/add_income.css') }}">
+</head>
+<body>
+
+<div class="page-wrapper">
+  <div class="main-card">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      Dashboard / Income Management / <span>Add Income</span>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <h1>Add Income</h1>
+        <p>Record a new income entry</p>
+      </div>
+
+      <a href="/income" class="back-btn">Back</a>
+    </div>
+
+    <!-- INNER CARD (same as Income Records card) -->
+    <div class="income-card">
+
+      <h2>Income Details</h2>
+      <p class="hint">Salary, Freelancing, Business, Other Source</p>
+
+    <form method="POST" action="{{ url_for('add_income') }}">
+
+
+        <!-- Row 1 -->
+        <!-- Row 1 -->
+<div class="form-row">
+
+  <!-- Income Source -->
+  <div class="form-group">
+    <label>Income Source</label>
+
+   <select
+  class="form-select income-select"
+  id="incomeSource"
+  name="income_source"
+  onchange="handleIncomeSourceChange()"
+  required
+>
+  <option value="">Select income source</option>
+  <option value="Salary">Salary</option>
+  <option value="Freelancing">Freelancing</option>
+  <option value="Business">Business</option>
+  <option value="Other">Other</option>
+</select>
+
+
+    <!-- Other Income Source -->
+   <div id="otherIncomeWrapper" class="other-income-wrapper">
+  <input
+    type="text"
+    class="form-input other-income-input"
+    name="other_income_source"
+    placeholder="Enter other income source"
+  />
+</div>
+
+
+  </div>
+
+  <!-- Amount -->
+  <div class="form-group">
+    <label>Amount (₹)</label>
+    <input
+      type="number"
+      name="amount"
+      placeholder="Enter amount"
+      required
+    >
+  </div>
+
+</div>
+
+
+        <!-- Date -->
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" name="date" required>
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label>Description (optional)</label>
+          <textarea
+            name="description"
+            placeholder="Notes about this income"
+          ></textarea>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="submit-btn">
+          ➕ Add Income
+        </button>
+
+      </form>
+
+    </div>
+
+  </div>
+</div>
+<script>
+  function handleIncomeSourceChange() {
+    const select = document.getElementById("incomeSource");
+    const otherWrapper = document.getElementById("otherIncomeWrapper");
+
+    if (select.value === "Other") {
+      otherWrapper.style.display = "block";
+    } else {
+      otherWrapper.style.display = "none";
+    }
+  }
+
+  // Hide on page load (important for refresh / back navigation)
+  document.addEventListener("DOMContentLoaded", function () {
+    handleIncomeSourceChange();
+  });
+</script>
+
+
+
+</body>
+</html>

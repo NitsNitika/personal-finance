@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Income</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/manage_income.css') }}">
+</head>
+<body>
+
+<div class="page-wrapper">
+  <div class="main-card">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      Dashboard / Income Management / <span>Manage Income</span>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <h1>Manage Income</h1>
+        <p>Review and edit your income records</p>
+      </div>
+      <a href="{{ url_for('income_summary') }}" class="back-btn">Back</a>
+    </div>
+
+    <!-- Income Card -->
+    <div class="income-card">
+      <h2>Income Records</h2>
+
+      <!-- TABLE -->
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Source</th>
+            <th>Amount</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody id="incomeTableBody">
+          {% for income in incomes %}
+          <tr class="{% if loop.index > 5 %}hidden-row{% endif %}">
+            <td>{{ income.date | pretty_date }}</td>
+
+
+            <td>{{ income.source.title() }}</td>
+            <td>₹{{ income.amount }}</td>
+            <td>
+              <a href="{{ url_for('edit_income', id=income.id) }}" class="edit-btn">✏️</a>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="4" class="no-data">No income records found</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <!-- VIEW MORE / LESS -->
+      {% if incomes|length > 5 %}
+      <div class="view-toggle-wrapper">
+        <button id="toggleViewBtn" class="view-toggle-btn">
+          View More
+        </button>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPT -->
+<script>
+  const toggleBtn = document.getElementById("toggleViewBtn");
+  const hiddenRows = document.querySelectorAll(".hidden-row");
+
+  let expanded = false;
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      expanded = !expanded;
+
+      hiddenRows.forEach(row => {
+        row.style.display = expanded ? "table-row" : "none";
+      });
+
+      toggleBtn.textContent = expanded ? "View Less" : "View More";
+    });
+  }
+</script>
+
+</body>
+</html>

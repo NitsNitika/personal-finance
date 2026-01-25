@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Forgot Password</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h2>Password Recovery</h2>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <p class="error-text">{{ messages[0] }}</p>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+                <input type="email" name="email" placeholder="Enter your registered email" required>
+                <button type="submit">Generate Reset Link</button>
+            </form>
+
+            <a href="{{ url_for('login') }}">Back to Login</a>
+
+            <!-- Developer Preview (Hidden initially) -->
+            {% if dev_link %}
+            <div id="dev-reset-box" class="dev-box" style="display:none;">
+                <p class="dev-title">Reset Link (Development Mode)</p>
+                <a class="dev-value" href="{{ dev_link }}">{{ dev_link }}</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Show reset link after 2 seconds
+        setTimeout(() => {
+            const box = document.getElementById("dev-reset-box");
+            if (box) box.style.display = "block";
+        }, 2000);
+    </script>
+</body>
+</html>

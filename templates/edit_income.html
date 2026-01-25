@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Income</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/edit_income.css') }}">
+</head>
+<body>
+
+<div class="page-wrapper">
+  <div class="edit-card">
+
+    <h1>Edit Income</h1>
+
+    <form method="POST">
+
+      <!-- Income Source -->
+      <div class="form-group">
+        <label>Income Source</label>
+        <select name="source" required>
+          <option value="Salary" {{ 'selected' if income.source == 'Salary' else '' }}>
+            Salary
+          </option>
+          <option value="Business" {{ 'selected' if income.source == 'Business' else '' }}>
+            Business
+          </option>
+          <option value="Freelancing" {{ 'selected' if income.source == 'Freelancing' else '' }}>
+            Freelancing
+          </option>
+        </select>
+      </div>
+
+      <!-- Amount -->
+      <div class="form-group">
+        <label>Amount (₹)</label>
+        <input
+          type="number"
+          step="0.01"
+          name="amount"
+          value="{{ income.amount }}"
+          required
+        >
+      </div>
+
+      <!-- Date (WORKING CALENDAR) -->
+      <div class="form-group">
+  <label>Date</label>
+  <div class="date-wrapper">
+    <input
+      type="date"
+      name="date"
+      value="{{ income.date }}"
+      required
+    >
+    <span class="calendar-icon">📅</span>
+  </div>
+</div>
+
+
+      <!-- Description -->
+      <div class="form-group">
+        <label>Description</label>
+        <textarea name="description">{{ income.description }}</textarea>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="primary-btn">
+        Update Income
+      </button>
+
+    </form>
+
+    <!-- Back -->
+    <a href="{{ url_for('manage_income') }}" class="back-link">
+      ← Back to Manage Income
+    </a>
+
+  </div>
+</div>
+
+</body>
+</html>

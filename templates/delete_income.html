@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>View & Delete Income</title>
+
+  <!-- Shared CSS -->
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/manage_income.css') }}?v=2">
+</head>
+
+<body>
+
+<!-- ================= TOAST (FLASH MESSAGE) ================= -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="toast-container">
+  {% for category, message in messages %}
+  <div class="toast {{ category }}">
+    {% if category == 'success' %}✅{% elif category == 'danger' %}🗑{% endif %}
+    {{ message }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+<div class="page-wrapper">
+  <div class="main-card">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+      Dashboard / Income Management / <span>View & Delete Income</span>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <h1>View & Delete Income</h1>
+        <p>Review and remove unwanted income records</p>
+      </div>
+
+      <a href="/income" class="back-btn back-danger">Back</a>
+    </div>
+
+    <!-- Income Records -->
+    <div class="income-card">
+      <h2>Income Records</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Source</th>
+            <th>Amount</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody id="incomeTableBody">
+          {% for income in incomes %}
+          <tr class="{% if loop.index > 5 %}hidden-row{% endif %}">
+            <td>{{ income.date | pretty_date }}</td>
+
+            <td>{{ income.source.title() }}</td>
+            <td>₹{{ "{:,.2f}".format(income.amount) }}</td>
+            <td>
+
+              <a href="javascript:void(0)"
+   class="delete-btn"
+   onclick="openDeleteModal({{ income.id }})">
+  🗑
+</a>
+
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="4" class="no-data">No income records found</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      {% if incomes|length > 5 %}
+      <div class="view-toggle-wrapper">
+        <a href="javascript:void(0)"
+   id="toggleViewBtn"
+   class="view-toggle-btn">
+  View More
+</a>
+
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= VIEW MORE / VIEW LESS ================= -->
+<script>
+  const toggleBtn = document.getElementById("toggleViewBtn");
+  const hiddenRows = document.querySelectorAll(".hidden-row");
+
+  let expanded = false;
+
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", () => {
+      expanded = !expanded;
+
+      hiddenRows.forEach(row => {
+        row.style.display = expanded ? "table-row" : "none";
+      });
+
+      toggleBtn.textContent = expanded ? "View Less" : "View More";
+    });
+  }
+</script>
+
+<!-- ================= AUTO HIDE TOAST ================= -->
+<script>
+  setTimeout(() => {
+    document.querySelectorAll('.toast').forEach(t => t.remove());
+  }, 3000);
+</script>
+
+<!-- DELETE CONFIRM MODAL -->
+<div id="deleteModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Delete Income</h3>
+    <p>Are you sure you want to delete this income?</p>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+      <a id="confirmDeleteBtn" class="btn-danger">Yes</a>
+    </div>
+  </div>
+</div>
+<script>
+  function openDeleteModal(id) {
+    document.getElementById("deleteModal").style.display = "flex";
+    document.getElementById("confirmDeleteBtn").href =
+      "/income/delete/" + id;
+  }
+
+  function closeDeleteModal() {
+    document.getElementById("deleteModal").style.display = "none";
+  }
+</script>
+
+
+</body>
+</html>

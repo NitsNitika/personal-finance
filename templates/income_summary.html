@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Income Management</title>
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/income.css') }}?v=1000">
+
+  <!-- Chart JS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<div class="toast-container">
+  {% for message in messages %}
+    <div class="toast success">✅ {{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div class="breadcrumb">Dashboard / Income Management</div>
+
+    <div class="header-row">
+      <div>
+        <h1>Income Management</h1>
+        <p class="subtitle">
+          Manage your income: add, update, delete entries and view your income summary.
+        </p>
+      </div>
+      <a href="/dashboard" class="btn-back">Back to Dashboard</a>
+    </div>
+  </div>
+
+  <!-- ACTION CARDS -->
+  <div class="card-grid exact-design">
+
+    <div class="design-card add">
+      <div class="card-left">
+        <img class="small-icon" src="{{ url_for('static', filename='images/add.svg') }}">
+        <h3>Add Income</h3>
+        <p>Record new income entries</p>
+        <a href="{{ url_for('add_income') }}" class="design-btn blue">+ Add Income</a>
+      </div>
+      <img class="card-illustration"
+           src="{{ url_for('static', filename='images/cards/add-card.png') }}">
+    </div>
+
+    <div class="design-card update">
+      <div class="card-left">
+        <img class="small-icon" src="{{ url_for('static', filename='images/edit.svg') }}">
+        <h3>Update Income</h3>
+        <p>Modify existing income records</p>
+        <a href="/income/list" class="design-btn purple">🔍 Manage Income</a>
+      </div>
+      <img class="card-illustration"
+           src="{{ url_for('static', filename='images/cards/update-card.png') }}">
+    </div>
+
+    <div class="design-card delete">
+      <div class="card-left">
+        <img class="small-icon" src="{{ url_for('static', filename='images/delete.svg') }}">
+        <h3>Delete Income</h3>
+        <p>Remove unwanted income records</p>
+        <a href="/income/delete-list" class="design-btn red">🗑 View & Delete Income</a>
+      </div>
+      <img class="card-illustration"
+           src="{{ url_for('static', filename='images/cards/delete-card.png') }}">
+    </div>
+
+  </div>
+
+  <!-- MONTHLY SUMMARY -->
+  <div class="summary-card">
+
+    <div class="summary-header">
+      <div>
+        <h2>Monthly Income Summary</h2>
+        <p class="summary-subtitle">Year-wise income overview</p>
+      </div>
+    </div>
+    <div class="summary-metrics">
+ <h2 class="amount">₹{{ "{:,.2f}".format(total_income) }}</h2>
+   <span class="growth">+15.4% compared to last year</span>
+</div>
+
+    <!-- ✅ CORRECT LAYOUT -->
+    <div class="summary-content-grid">
+
+   <div class="chart-only">
+  <div class="chart-box">
+    <canvas id="monthlyIncomeChart"></canvas>
+  </div>
+</div>
+
+
+
+
+      <!-- RIGHT CARD : RECENT INCOME -->
+      <div class="inner-card recent-wrapper">
+        <h3>Recent Income Entries</h3>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Source</th>
+              <th>Amount</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% if incomes %}
+            {% for income in incomes %}
+            <tr>
+              <td>{{ income.date | pretty_date }}</td>
+              <td>{{ income.source }}</td>
+              <td>₹{{ "{:,.2f}".format(income.amount) }}</td>
+              <td>
+                <a href="/income/edit/{{ income.id }}">✏️</a>
+                <a href="/income/delete/{{ income.id }}">🗑️</a>
+              </td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="4" style="text-align:center;color:#999;">
+                No income added yet
+              </td>
+            </tr>
+          {% endif %}
+          </tbody>
+        </table>
+
+        <a href="/income/list" class="view-all">View All</a>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const monthlyIncome = {{ monthly_income | tojson }};
+</script>
+
+<script src="{{ url_for('static', filename='js/income_chart.js') }}"></script>
+<script src="{{ url_for('static', filename='js/income.js') }}"></script>
+</body>
+</html>

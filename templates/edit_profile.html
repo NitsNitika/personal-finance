@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="auth-container">
+    <div class="auth-card">
+
+        <h2>Edit Profile</h2>
+        <p class="profile-subtitle">Update your account details</p>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <p class="error-text">{{ messages[0] }}</p>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Profile Image Preview -->
+        <div class="profile-avatar">
+            {% if user['profile_pic'] %}
+                <img 
+                    src="{{ url_for('static', filename='uploads/' + user['profile_pic']) }}" 
+                    class="avatar-img"
+                >
+            {% else %}
+                <div class="avatar-circle">Profile</div>
+            {% endif %}
+        </div>
+
+        <!-- FORM -->
+        <form method="POST" enctype="multipart/form-data">
+
+            <input type="text" name="name" value="{{ user['name'] }}" required>
+
+            <input type="email" name="email" value="{{ user['email'] }}" required>
+
+            <!-- Profile Picture -->
+            <input type="file" name="profile_pic" accept="image/*">
+
+            <button type="submit">Save Changes</button>
+        </form>
+
+        <!-- ACTION LINKS -->
+        <div class="profile-actions">
+
+            <!-- Back -->
+            <a href="{{ url_for('dashboard') }}" class="btn-outline">
+                ← Back to Profile
+            </a>
+
+            <!-- ✅ Income Management -->
+            <a href="{{ url_for('income_summary') }}" class="btn-success">
+                💰 Income Management
+            </a>
+
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

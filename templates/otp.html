@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OTP Verification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h2>Verify Your Identity</h2>
+
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <p class="error-text">{{ messages[0] }}</p>
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+                <input type="text" name="otp" placeholder="Enter 6-digit code" required maxlength="6">
+                <button type="submit">Verify</button>
+            </form>
+
+            <p>For security, this code is valid for 2 minutes.</p>
+            <a href="{{ url_for('resend_otp') }}">Resend Code</a>
+
+            <!-- Developer Preview (Hidden initially) -->
+            {% if dev_otp %}
+            <div id="dev-otp-box" class="dev-box" style="display:none;">
+                <p class="dev-title">Verification Code (Development Mode)</p>
+                <p class="dev-value">{{ dev_otp }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Show OTP after 2 seconds
+        setTimeout(() => {
+            const box = document.getElementById("dev-otp-box");
+            if (box) box.style.display = "block";
+        }, 2000);
+    </script>
+</body>
+</html>
