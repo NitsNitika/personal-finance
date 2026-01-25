@@ -62,6 +62,19 @@ def init_db():
             FOREIGN KEY (user_id) REFERENCES users(id)
         )
     """)
+     # ✅ EXPENSES TABLE (ADD THIS)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS expenses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            amount REAL NOT NULL,
+            category TEXT NOT NULL,
+            date TEXT NOT NULL,
+            note TEXT,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        )
+    """)
+
 
     conn.commit()
     conn.close()
@@ -442,31 +455,6 @@ def income_summary():
         monthly_income=monthly_income   # ✅ PASS TO TEMPLATE
     )
 
-# @app.route("/income")
-# def income_summary():
-#     if "user_id" not in session:
-#         return redirect(url_for("login"))
-
-#     conn = get_db()
-
-#     incomes = conn.execute(
-#         "SELECT * FROM income WHERE user_id = ? ORDER BY date DESC LIMIT 5",
-#         (session["user_id"],)
-#     ).fetchall()
-
-#     total = conn.execute(
-#         "SELECT COALESCE(SUM(amount), 0) FROM income WHERE user_id = ?",
-#         (session["user_id"],)
-#     ).fetchone()[0]
-
-#     conn.close()
-
-#     return render_template(
-#         "income_summary.html",
-#         incomes=incomes,
-#         total_income=total
-#     )
-
  
 @app.route("/income/list")
 def manage_income():
@@ -518,47 +506,6 @@ def edit_income(id):
     conn.close()
     return render_template("edit_income.html", income=income)
 
-
-
-# @app.route("/income/edit/<int:id>", methods=["GET", "POST"])
-# def edit_income(id):
-#     if "user_id" not in session:
-#         return redirect(url_for("login"))
-
-#     conn = get_db()
-#     income = conn.execute(
-#         "SELECT * FROM income WHERE id = ? AND user_id = ?",
-#         (id, session["user_id"])
-#     ).fetchone()
-
-#     if not income:
-#         conn.close()
-#         return redirect(url_for("manage_income"))
-
-#     if request.method == "POST":
-#         source = request.form["source"]
-#         amount = float(request.form["amount"])
-#         date = request.form["date"]   # YYYY-MM-DD
-#         description = request.form.get("description")
-
-#         conn.execute("""
-#             UPDATE income
-#             SET source=?, amount=?, date=?, description=?
-#             WHERE id=? AND user_id=?
-#         """, (source, amount, date, description, id, session["user_id"]))
-#         conn.commit()
-#         conn.close()
-
-#         return redirect(url_for("manage_income"))
-
-#     # 🔥 CONVERT DATE FOR INPUT TYPE=DATE
-#     formatted_income = dict(income)
-#     formatted_income["date"] = datetime.strptime(
-#         income["date"], "%d - %m - %Y"
-#     ).strftime("%Y-%m-%d")
-
-#     conn.close()
-#     return render_template("edit_income.html", income=formatted_income)
 
 @app.route("/income/delete-list")
 def delete_income_list():
@@ -642,6 +589,88 @@ def add_income():
 
     return render_template("add_income.html")
 
+
+@app.route("/expense-management")
+def expense_management():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    category = request.args.get("category")
+    from_date = request.args.get("from")
+    to_date = request.args.get("to")
+
+    query = "SELECT * FROM expenses WHERE user_id = ?"
+    params = [session["user_id"]]
+
+    if category:
+        query += " AND category = ?"
+        params.append(category)
+
+    if from_date:
+        query += " AND date >= ?"
+        params.append(from_date)
+
+    if to_date:
+        query += " AND date <= ?"
+        params.append(to_date)
+
+    query += " ORDER BY date DESC"
+
+    conn = get_db()
+    expenses = conn.execute(query, params).fetchall()
+
+    total = conn.execute(
+        f"SELECT COALESCE(SUM(amount),0) FROM ({query})",
+        params
+    ).fetchone()[0]
+
+    conn.close()
+
+    return render_template(
+        "expense_management.html",
+        expenses=expenses,
+        total=total
+    )
+
+
+
+@app.route('/add-expense', methods=['GET', 'POST'])
+def add_expense():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if request.method == 'POST':
+        conn = get_db()
+        conn.execute(
+            "INSERT INTO expenses (user_id, amount, category, date, note) VALUES (?, ?, ?, ?, ?)",
+            (
+                session['user_id'],
+                request.form['amount'],
+                request.form['category'],
+                request.form['date'],
+                request.form['note']
+            )
+        )
+        conn.commit()
+        conn.close()
+        return redirect('/expense-management')
+
+    return render_template('add_expense.html')
+
+
+@app.route('/delete-expense/<int:id>')
+def delete_expense(id):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db()
+    conn.execute(
+        "DELETE FROM expenses WHERE id = ? AND user_id = ?",
+        (id, session["user_id"])
+    )
+    conn.commit()
+    conn.close()
+    return redirect('/expense-management')
 
 
 if __name__ == "__main__":

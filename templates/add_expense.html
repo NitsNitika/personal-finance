@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Expense</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/add_expense.css') }}">
+</head>
+
+<body>
+
+<div class="form-card">
+  <h2>Add Expense</h2>
+
+  <a href="{{ url_for('expense_management') }}" class="btn-back">
+    ← Back to Expenses
+  </a>
+
+  <form method="POST">
+    <label>Amount</label>
+    <input type="number" name="amount" min="1" required>
+
+    <label>Category</label>
+    <select name="category" required>
+      <option value="">Select Category</option>
+      <option>Food</option>
+      <option>Travel</option>
+      <option>Shopping</option>
+      <option>Bills</option>
+      <option>Other</option>
+    </select>
+
+    <label>Date</label>
+    <input type="date" name="date" value="{{ today }}" required>
+
+    <label>Note</label>
+    <input type="text" name="note" placeholder="Optional">
+
+    <button type="submit">Save Expense</button>
+  </form>
+</div>
+
+</body>
+</html>

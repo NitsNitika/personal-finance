@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Expense Management</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/expense.css') }}">
+</head>
+
+<body>
+
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <div class="page-header">
+    <div>
+      <p class="breadcrumb">Dashboard / Expense Management</p>
+      <h1>Expense Management</h1>
+      <p class="subtitle">
+        Add daily expenses, categorize them, and filter by date or category.
+      </p>
+    </div>
+
+    <a href="{{ url_for('dashboard') }}" class="btn-back">
+      Back to Dashboard
+    </a>
+  </div>
+
+  <!-- Card -->
+  <div class="card">
+
+    <!-- Action Bar -->
+<form method="GET" class="action-bar">
+  <a href="{{ url_for('add_expense') }}" class="btn-primary">
+    + Add Expense
+  </a>
+<select name="category" id="categorySelect">
+  <option value="">Category: All</option>
+  <option value="Food">Food</option>
+  <option value="Travel">Travel</option>
+  <option value="Shopping">Shopping</option>
+  <option value="Bills">Bills</option>
+  <option value="Other">Other</option>
+</select>
+
+<!-- Hidden input (shows only if Other selected) -->
+<input
+  type="text"
+  name="custom_category"
+  id="customCategory"
+  placeholder="Enter other category"
+  style="display:none;"
+>
+
+
+  <input type="date" name="from">
+  <input type="date" name="to">
+
+  <button type="submit" class="btn-primary">Filter</button>
+</form>
+
+    <!-- Table -->
+    <table>
+      <thead>
+        <tr>
+          <th class="col-date">Date</th>
+          <th class="col-category">Category</th>
+          <th class="col-note">Note</th>
+          <th class="col-amount">Amount (₹)</th>
+          <th class="col-action">Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% if expenses %}
+          {% for e in expenses %}
+          <tr>
+            <td class="col-date">{{ e.date | pretty_date }}</td>
+            <td class="col-category">{{ e.category }}</td>
+            <td class="col-note">{{ e.note or '-' }}</td>
+            <td class="col-amount">
+              <span class="amount">₹{{ e.amount }}</span>
+            </td>
+            <td class="col-action">
+              <a href="{{ url_for('delete_expense', id=e.id) }}" class="delete">🗑</a>
+            </td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="5" class="empty">
+              No expenses found
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+
+    <!-- Total -->
+    <div class="total">
+      Total Expenses: ₹{{ total }}
+    </div>
+
+  </div>
+</div>
+  <!-- your existing HTML above -->
+
+  <script>
+    const categorySelect = document.getElementById("categorySelect");
+    const customCategory = document.getElementById("customCategory");
+
+    categorySelect.addEventListener("change", function () {
+      if (this.value === "Other") {
+        customCategory.style.display = "block";
+        customCategory.required = true;
+      } else {
+        customCategory.style.display = "none";
+        customCategory.value = "";
+        customCategory.required = false;
+      }
+    });
+  </script>
+
+</body>
+</html>
+
+</body>
+</html>

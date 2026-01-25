@@ -1,0 +1,247 @@
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  background: #f4f7fc;
+  margin: 0;
+  padding: 40px;
+  font-size: 16px; 
+}
+
+/* Layout */
+.page-wrapper {
+  max-width: 1100px;
+  margin: auto;
+   font-size: 36px;
+}
+
+/* Header */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 25px;
+}
+
+/* Breadcrumb text */
+.breadcrumb {
+  font-size: 22px;        /* increase size */
+  font-weight: 500;
+  color:grey;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.page-header h1 {
+  font-size: 40px;
+  margin: 0;
+}
+
+.subtitle {
+  color: #555;
+  margin-top: 6px;
+}
+
+/* Back Button */
+.btn-back {
+  background: #6c8cff;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 20px;
+  padding: 16px 32px;
+  border-radius: 16px;
+
+}
+
+/* Card */
+.card {
+  background: white;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+}
+
+/* Action Bar */
+/* ===== ACTION BAR SIZE BOOST ===== */
+.action-bar {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+/* Add Expense button */
+.action-bar .btn-primary {
+  font-size: 18px;        /* ⬆ text size */
+  padding: 14px 26px;    /* ⬆ height + width */
+  border-radius: 14px;
+  font-weight: 600;
+}
+
+/* Category + Date inputs */
+.action-bar select,
+.action-bar input {
+  font-size: 17px;       /* ⬆ text size */
+  padding: 14px 18px;    /* ⬆ input height */
+  border-radius: 14px;
+  min-width: 190px;
+  border: 1px solid #d1d5db;
+  background: white;
+}
+
+/* Calendar icon spacing fix */
+.action-bar input[type="date"] {
+  padding-right: 16px;
+}
+
+
+.btn-primary {
+  background: #4f6cff;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: left;
+  padding: 14px 10px;
+  background: #f6f8ff;
+}
+
+td {
+  padding: 14px 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.right {
+  text-align: right;
+}
+
+.center {
+  text-align: center;
+}
+
+.amount {
+  font-size: 18px;      /* ⬆ amount text */
+  font-weight: 700;
+  color: #d11a2a;
+  text-align: right;
+}
+
+/* Delete */
+.delete {
+  color: #d11a2a;
+  text-decoration: none;
+  font-size: 22px;
+}
+
+/* Empty */
+.empty {
+  text-align: center;
+  padding: 25px;
+  color: #777;
+}
+
+/* Total */
+.total {
+  text-align: right;
+  font-size: 22px;      /* ⬆ total text */
+  font-weight: 700;
+  margin-top: 20px;
+
+
+}
+.subtitle {
+  font-size: 22px;
+}
+
+
+/* Buttons */
+.btn-primary,
+.btn-back {
+  font-size: 16px;
+}
+
+table th {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+table td {
+  font-size: 16px;
+}
+
+/* ===== AMOUNT COLUMN FIX ===== */
+th.amount-col,
+td.amount-col {
+  text-align: right;
+  width: 160px;
+}
+
+.amount {
+  color: #d11a2a;
+  font-weight: 700;
+  text-align: right;
+  display: block;
+}
+
+/* Action column center */
+th.action-col,
+td.action-col {
+  text-align: center;
+  width: 100px;
+}
+/* ===== TOTAL ===== */
+.total {
+  font-size: 20px;
+  font-weight: 500;
+  margin-top: 18px;
+}
+table thead th {
+  font-size: 20px;       /* ⬆ heading size */
+  font-weight: 700;
+  padding: 18px 14px;   /* ⬆ height */
+  background: #f6f8ff;
+}
+table tbody td {
+  font-size: 18px;      /* ⬆ row text size */
+  padding: 18px 14px;  /* ⬆ row height */
+}
+/* Force equal column spacing */
+table {
+  table-layout: fixed;
+}
+
+/* Column widths */
+.col-date {
+  width: 20%;
+}
+
+.col-category {
+  width: 20%;
+}
+
+.col-note {
+  width: 30%;
+}
+
+.col-amount {
+  width: 20%;
+  text-align: right;
+}
+
+.col-action {
+  width: 10%;
+  text-align: center;
+}

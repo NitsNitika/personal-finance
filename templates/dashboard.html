@@ -36,7 +36,8 @@
     <div class="profile-actions">
       <a href="{{ url_for('edit_profile') }}" class="btn-outline">Edit Profile ✏️</a>
       <a href="{{ url_for('change_password') }}" class="btn-primary">Change Password 🔒</a>
-      <a href="{{ url_for('income_summary') }}" class="income-link">Income Management 💰</a>
+      <a href="/income" class="profile-box income-box">Income Management 💰</a>
+      <a href="/expense-management" class="profile-box expense-box">Expense Management 💸</a>
       <a href="{{ url_for('logout') }}" class="btn-danger">Logout 🚪</a>
     </div>
 

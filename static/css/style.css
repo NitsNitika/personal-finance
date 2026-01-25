@@ -733,6 +733,50 @@ a:active {
   color: #000 !important;
   text-decoration: none !important;
 }
+.profile-box {
+  display: block;
+  width: 100%;
+  padding: 18px;
+  margin: 12px 0; /* SAME spacing for all */
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 14px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
 
+
+/* Expense Management specific style */
+.expense-box {
+  border: 2px solid #6c8cff;
+  color: #000;
+  background: #ffffff;
+}
+
+/* Hover effect */
+.expense-box:hover {
+  background: #6c8cff;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(108, 140, 255, 0.3);
+}
+/* Income & Expense box border black */
+.income-box,
+.expense-box {
+  border: 2px solid #000;   /* BLACK border */
+  color: #000;
+  background: #fff;
+}
+.income-box:hover,
+.expense-box:hover {
+  background: #000;
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+}
+/* FORCE black border for income & expense */
+.income-box,
+.expense-box {
+  border: 2px solid #000 !important;
+}
 
  
