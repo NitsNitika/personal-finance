@@ -32,7 +32,9 @@ body {
   color:grey;
   display: block;
   margin-bottom: 10px;
+  
 }
+
 
 .page-header h1 {
   font-size: 40px;
@@ -46,7 +48,7 @@ body {
 
 /* Back Button */
 .btn-back {
-  background: #6c8cff;
+  background:  #4f6cff;
   color: white;
   text-decoration: none;
   font-weight: 600;
@@ -64,14 +66,15 @@ body {
   box-shadow: 0 15px 40px rgba(0,0,0,0.08);
 }
 
-/* Action Bar */
+
 /* ===== ACTION BAR SIZE BOOST ===== */
 .action-bar {
   display: flex;
-  gap: 18px;
+  gap: 14px;
   align-items: center;
-  margin-bottom: 28px;
+  flex-wrap: wrap;              /* 🔥 KEY FIX */
 }
+
 
 /* Add Expense button */
 .action-bar .btn-primary {
@@ -87,15 +90,25 @@ body {
   font-size: 17px;       /* ⬆ text size */
   padding: 14px 18px;    /* ⬆ input height */
   border-radius: 14px;
-  min-width: 190px;
+  min-width: 220px;
   border: 1px solid #d1d5db;
   background: white;
+  height: 52px;
 }
 
 /* Calendar icon spacing fix */
 .action-bar input[type="date"] {
   padding-right: 16px;
 }
+.action-bar .btn-filter {
+  height: 52px;
+  padding: 0 26px;
+  white-space: nowrap;
+}
+#customCategory {
+  min-width: 220px;
+}
+
 
 
 .btn-primary {
@@ -163,7 +176,7 @@ td {
 
 }
 .subtitle {
-  font-size: 22px;
+  font-size: 20px;
 }
 
 
@@ -244,4 +257,231 @@ table {
 .col-action {
   width: 10%;
   text-align: center;
+}
+.plus-icon {
+  font-size: 28px;       /* increase + size */
+  font-weight: 800;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+/* Toast container */
+#toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+/* Toast message */
+.toast {
+  background:green;       /* green */
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 10px;
+  font-size: 22px;
+  font-weight: 600;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  animation: slideIn 0.4s ease, fadeOut 0.4s ease 2.6s forwards;
+}
+
+/* Animation */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.toast {
+  padding: 14px 20px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  animation: fadeOut 3s forwards;
+}
+
+/* RED toast for delete */
+.toast.danger {
+  background: #e53935;
+}
+
+/* auto hide */
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.btn-primary {
+  white-space: nowrap;      /* 🔥 prevents line breaks */
+  display: inline-flex;     /* align + and text */
+  align-items: center;
+  gap: 10px;                /* space between + and text */
+}
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-card {
+  background: white;
+  width: 420px;
+  border-radius: 16px;
+  padding: 22px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.modal-close {
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.modal-card label {
+  display: block;
+  margin-top: 12px;
+  font-weight: 600;
+}
+
+.modal-card input,
+.modal-card select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  margin-top: 6px;
+}
+
+/* Amount box */
+.amount-box {
+  display: flex;
+  align-items: center;
+}
+
+.amount-box span {
+  padding: 12px;
+  background: #f3f4f6;
+  border: 1px solid #ddd;
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+}
+
+.amount-box input {
+  border-radius: 0 10px 10px 0;
+  border-left: none;
+}
+
+/* Actions */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn-cancel {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  background: #f1f5f9;
+  cursor: pointer;
+}
+
+.btn-save {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  background: #4caf50;
+  color: white;
+  font-weight: 600;
+}
+/* ===== DELETE MODAL ===== */
+.delete-card {
+  max-width: 480px;
+  padding: 35px 40px;
+  border-radius: 20px;
+  text-align: center;
+}
+
+/* Title */
+.delete-title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+/* Message */
+.delete-text {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 30px;
+  line-height: 1.4;
+}
+
+/* Buttons container */
+.delete-actions {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+/* YES button */
+.btn-delete {
+  background: #e53935;
+  color: white;
+  padding: 12px 30px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  text-decoration: none;      /* 🚫 no underline */
+}
+
+.btn-delete:hover {
+  background: #d32f2f;
+}
+
+/* NO button */
+.btn-cancel {
+  background: #eef1f6;
+  color: #333;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cancel:hover {
+  background: #e0e4eb;
 }

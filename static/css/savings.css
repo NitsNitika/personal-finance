@@ -1,0 +1,128 @@
+/* ================= BASE ================= */
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  background: #f6f8fb;
+  color: #222;
+}
+
+/* Page wrapper */
+.savings-page {
+  max-width: 1300px;
+  margin: 70px auto;
+  padding: 50px 30px 70px;
+}
+
+/* ================= HEADER ================= */
+.savings-page h1 {
+  font-size: 48px;     /* ⬆ 50% bigger */
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 22px;    /* ⬆ */
+  color: #666;
+  margin-bottom: 44px;
+}
+
+/* Back button */
+.back-dashboard-btn {
+  position: absolute;
+  top: 32px;
+  right: 48px;
+  padding: 18px 40px;
+  font-size: 18px;
+  font-weight: 600;
+  background: #4f6ef7;
+  color: #fff;
+  border-radius: 36px;
+  text-decoration: none;
+  box-shadow: 0 12px 26px rgba(79,110,247,0.25);
+}
+
+/* ================= SUMMARY CARDS ================= */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  margin-bottom: 56px;
+}
+
+/* Card */
+.summary-card {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 26px 32px;      /* ⬆ but controlled */
+  border-radius: 18px;
+  color: #fff;
+  box-shadow: 0 14px 34px rgba(0,0,0,0.1);
+}
+
+/* Colors */
+.summary-card.income { background: #5b8def; }
+.summary-card.expense { background: #f26c6c; }
+.summary-card.saving { background: #63c97a; }
+
+/* Icon */
+.card-icon {
+  width: 72px;             /* ⬆ 50% */
+  height: 72px;
+  padding: 12px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.22);
+  object-fit: contain;
+}
+
+/* Text */
+.card-text h3 {
+  font-size: 22px;         /* ⬆ */
+  font-weight: 600;
+  margin: 0;
+}
+
+.card-text p {
+  font-size: 38px;         /* ⬆ BIG number */
+  font-weight: 800;
+  margin: 6px 0 0;
+}
+
+/* ================= SECTION TITLE ================= */
+.section-title {
+  font-size: 34px;         /* ⬆ */
+  font-weight: 700;
+  margin-bottom: 26px;
+}
+
+/* ================= CONTENT ROW ================= */
+.content-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 32px;
+  align-items: stretch;
+}
+
+/* Chart card */
+.chart-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 32px;           /* ⬆ */
+  box-shadow: 0 16px 38px rgba(0,0,0,0.08);
+  height: 480px; 
+}
+
+/* Insight card */
+.insight-card {
+  background: #eef9f0;
+  border-radius: 18px;
+  padding: 36px;
+  font-size: 26px;         /* ⬆ */
+  font-weight: 500;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.45;
+  box-shadow: 0 16px 38px rgba(0,0,0,0.08);
+}

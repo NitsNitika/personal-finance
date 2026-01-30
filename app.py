@@ -596,16 +596,23 @@ def expense_management():
         return redirect(url_for("login"))
 
     category = request.args.get("category")
-    from_date = request.args.get("from")
-    to_date = request.args.get("to")
+    custom_category = request.args.get("custom_category")
+    from_date = request.args.get("from_date")
+    to_date = request.args.get("to_date")
 
     query = "SELECT * FROM expenses WHERE user_id = ?"
     params = [session["user_id"]]
 
+    # CATEGORY FILTER
     if category:
-        query += " AND category = ?"
-        params.append(category)
+        if category == "Other" and custom_category:
+            query += " AND category = ?"
+            params.append(custom_category.strip())
+        else:
+            query += " AND category = ?"
+            params.append(category)
 
+    # DATE FILTER
     if from_date:
         query += " AND date >= ?"
         params.append(from_date)
@@ -620,7 +627,7 @@ def expense_management():
     expenses = conn.execute(query, params).fetchall()
 
     total = conn.execute(
-        f"SELECT COALESCE(SUM(amount),0) FROM ({query})",
+        f"SELECT COALESCE(SUM(amount), 0) FROM ({query})",
         params
     ).fetchone()[0]
 
@@ -633,29 +640,41 @@ def expense_management():
     )
 
 
-
 @app.route('/add-expense', methods=['GET', 'POST'])
 def add_expense():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
     if request.method == 'POST':
+        category = request.form['category']
+        custom_category = request.form.get('custom_category')
+
+        final_category = (
+            custom_category.strip()
+            if category == "Other" and custom_category
+            else category
+        )
+
         conn = get_db()
         conn.execute(
             "INSERT INTO expenses (user_id, amount, category, date, note) VALUES (?, ?, ?, ?, ?)",
             (
                 session['user_id'],
                 request.form['amount'],
-                request.form['category'],
+                final_category,
                 request.form['date'],
                 request.form['note']
             )
         )
         conn.commit()
         conn.close()
-        return redirect('/expense-management')
+
+        flash("Expense saved successfully", "success")
+        return redirect(url_for("expense_management"))
 
     return render_template('add_expense.html')
+
+
 
 
 @app.route('/delete-expense/<int:id>')
@@ -670,9 +689,111 @@ def delete_expense(id):
     )
     conn.commit()
     conn.close()
-    return redirect('/expense-management')
+    flash("Expense deleted successfully", "danger")
+    return redirect(url_for("expense_management"))
+
+
+@app.route("/savings")
+def savings():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db()
+    user_id = session["user_id"]
+
+    # ---------- TOTALS ----------
+    income = conn.execute(
+        "SELECT COALESCE(SUM(amount), 0) FROM income WHERE user_id = ?",
+        (user_id,)
+    ).fetchone()[0]
+
+    expense = conn.execute(
+        "SELECT COALESCE(SUM(amount), 0) FROM expenses WHERE user_id = ?",
+        (user_id,)
+    ).fetchone()[0]
+
+    income = round(float(income), 2)
+    expense = round(float(expense), 2)
+
+    # ✅ ABS SAVINGS
+    savings_amount = round(abs(income - expense), 2)
+
+    # ---------- MONTH LOGIC ----------
+    from datetime import datetime, timedelta
+
+    today = datetime.today()
+    current_month = today.strftime("%Y-%m")
+    last_month = (today.replace(day=1) - timedelta(days=1)).strftime("%Y-%m")
+
+    # Current month
+    current_income = conn.execute("""
+        SELECT COALESCE(SUM(amount), 0)
+        FROM income
+        WHERE user_id = ?
+        AND strftime('%Y-%m', date) = ?
+    """, (user_id, current_month)).fetchone()[0]
+
+    current_expense = conn.execute("""
+        SELECT COALESCE(SUM(amount), 0)
+        FROM expenses
+        WHERE user_id = ?
+        AND strftime('%Y-%m', date) = ?
+    """, (user_id, current_month)).fetchone()[0]
+
+    current_income = float(current_income)
+    current_expense = float(current_expense)
+    current_savings = abs(current_income - current_expense)
+
+    # Last month
+    last_income = conn.execute("""
+        SELECT COALESCE(SUM(amount), 0)
+        FROM income
+        WHERE user_id = ?
+        AND strftime('%Y-%m', date) = ?
+    """, (user_id, last_month)).fetchone()[0]
+
+    last_expense = conn.execute("""
+        SELECT COALESCE(SUM(amount), 0)
+        FROM expenses
+        WHERE user_id = ?
+        AND strftime('%Y-%m', date) = ?
+    """, (user_id, last_month)).fetchone()[0]
+
+    last_income = float(last_income)
+    last_expense = float(last_expense)
+    last_savings = abs(last_income - last_expense)
+
+    # ---------- INSIGHT MESSAGE ----------
+    if current_savings > last_savings:
+        insight_message = "You saved more this month than last month 🎉"
+    elif current_savings < last_savings:
+        insight_message = "You saved less this month than last month ⚠️"
+    else:
+        insight_message = "Your savings are the same as last month ➖"
+
+    # ---------- CHART DATA (SAFE & READABLE) ----------
+    chart_data = {
+    "labels": ["Last Month", "This Month"],
+    "income": [last_income, current_income],
+    "expense": [last_expense, current_expense],
+    "savings": [last_savings, current_savings]
+}
+
+
+    conn.close()
+
+    return render_template(
+        "savings.html",
+        total_income=income,
+        total_expense=expense,
+        savings=savings_amount,
+        chart_data=chart_data,
+        insight_message=insight_message
+    )
+
+
 
 
 if __name__ == "__main__":
     app.run(debug=True)
-print(app.url_map)
+print(app.url_map)      

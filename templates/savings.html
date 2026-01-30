@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Savings Calculation</title>
+
+  <!-- Scoped Savings CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/savings.css') }}">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<!-- 🔒 Scoped wrapper -->
+<div class="savings-page">
+
+  <!-- Back button -->
+  <a href="{{ url_for('dashboard') }}" class="back-dashboard-btn">
+    Back to Dashboard
+  </a>
+
+  <!-- Header -->
+  <h1>Savings Calculation</h1>
+  <p class="subtitle">
+    Automatic calculation: Savings = Income − Expenses
+  </p>
+
+  <!-- ================= SUMMARY CARDS ================= -->
+  <div class="summary-cards">
+
+    <div class="summary-card income">
+      <img src="{{ url_for('static', filename='images/income.png') }}" class="card-icon" alt="Income">
+      <div class="card-text">
+        <span class="card-title">Income</span>
+        <span class="card-amount">₹ {{ "{:,.2f}".format(total_income) }}</span>
+
+      </div>
+    </div>
+
+    <div class="summary-card expense">
+      <img src="{{ url_for('static', filename='images/expense.png') }}" class="card-icon" alt="Expenses">
+      <div class="card-text">
+        <span class="card-title">Expenses</span>
+      <span class="card-amount">₹ {{ "{:,.2f}".format(total_expense) }}</span>
+
+      </div>
+    </div>
+
+    <div class="summary-card saving">
+      <img src="{{ url_for('static', filename='images/saving.png') }}" class="card-icon" alt="Savings">
+      <div class="card-text">
+        <span class="card-title">Savings</span>
+        <span class="card-amount">₹ {{ "{:,.2f}".format(savings) }}</span>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ================= CHART SECTION ================= -->
+  <h2 class="section-title">Monthly Savings Trends</h2>
+
+  <div class="content-row">
+
+    <!-- Chart Card -->
+    <div class="chart-card">
+      <!-- 🔥 FIX: Explicit height -->
+      <div style="height: 420px;">
+        <canvas id="savingsChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Insight Card -->
+    <div class="insight-card">
+      {{ insight_message }}
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ================= DATA PASS ================= -->
+<script>
+  // SAFE JSON conversion
+  const chartData = {{ chart_data | tojson }};
+</script>
+
+<!-- Chart Logic -->
+<script src="{{ url_for('static', filename='js/savings.js') }}?v=5"></script>
+
+
+</body>
+</html>

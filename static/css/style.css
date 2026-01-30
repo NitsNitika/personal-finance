@@ -778,5 +778,39 @@ a:active {
 .expense-box {
   border: 2px solid #000 !important;
 }
+.profile-btn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  margin: 15px 0;          /* ✅ equal spacing */
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  border-radius: 12px;
+  text-decoration: none;
+  border: 2px solid #000;
+  color: #000;
+  background: #fff;
+}
+.profile-btn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  margin: 15px 0;        /* equal spacing */
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  border-radius: 12px;
+  text-decoration: none;
+  border: 2px solid #000;   /* ✅ BLACK BORDER */
+  color: #000;
+  background: #fff;
+}
+
+.profile-btn:hover {
+  background: #000;     /* optional hover */
+  color: #fff;
+}
+
 
  

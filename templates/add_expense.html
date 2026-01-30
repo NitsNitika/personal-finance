@@ -1,42 +1,119 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Add Expense</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/add_expense.css') }}">
 </head>
-
 <body>
 
-<div class="form-card">
-  <h2>Add Expense</h2>
+<div class="add-page">
 
-  <a href="{{ url_for('expense_management') }}" class="btn-back">
-    ← Back to Expenses
-  </a>
+  <!-- Header -->
+  <div class="add-header">
+    <h1>Add Expense</h1>
 
-  <form method="POST">
-    <label>Amount</label>
-    <input type="number" name="amount" min="1" required>
+    <a href="{{ url_for('expense_management') }}" class="btn-back">
+      ← Back to Expenses
+    </a>
+  </div>
 
-    <label>Category</label>
-    <select name="category" required>
-      <option value="">Select Category</option>
-      <option>Food</option>
-      <option>Travel</option>
-      <option>Shopping</option>
-      <option>Bills</option>
-      <option>Other</option>
-    </select>
+  <!-- Card -->
+  <div class="form-card">
+    <form method="POST">
 
-    <label>Date</label>
-    <input type="date" name="date" value="{{ today }}" required>
+      <!-- Amount -->
+      <div class="form-group">
+        <label class="form-label">
+          Amount <span class="required">*</span>
+        </label>
 
-    <label>Note</label>
-    <input type="text" name="note" placeholder="Optional">
+        <div class="amount-wrapper">
+          <div class="currency">₹</div>
+          <input
+            type="number"
+            name="amount"
+            placeholder="Enter amount"
+            required
+          >
+        </div>
+      </div>
 
-    <button type="submit">Save Expense</button>
-  </form>
+      <!-- Category -->
+      <div class="form-group">
+        <label class="form-label">
+          Category <span class="required">*</span>
+        </label>
+
+        <select name="category" id="categorySelect" required>
+          <option value="">Select category</option>
+          <option>Food</option>
+          <option>Travel</option>
+          <option>Shopping</option>
+          <option>Bills</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <!-- Custom Category (hidden by default) -->
+      <div class="form-group" id="customCategoryGroup" style="display:none;">
+        <input
+          type="text"
+          name="custom_category"
+          id="customCategory"
+          placeholder="Enter other category"
+        >
+      </div>
+
+      <!-- Date -->
+      <div class="form-group">
+        <label class="form-label">
+          Date <span class="required">*</span>
+        </label>
+
+        <input type="date" name="date" required>
+      </div>
+
+      <!-- Note -->
+      <div class="form-group">
+        <label class="form-label">
+          Note (optional)
+        </label>
+
+        <input
+          type="text"
+          name="note"
+          placeholder="Lunch with friends..."
+        >
+      </div>
+
+      <!-- Save -->
+      <button type="submit" class="btn-save">
+        Save Expense
+      </button>
+
+    </form>
+  </div>
+
 </div>
+
+<!-- Script -->
+<script>
+  const categorySelect = document.getElementById("categorySelect");
+  const customGroup = document.getElementById("customCategoryGroup");
+  const customInput = document.getElementById("customCategory");
+
+  categorySelect.addEventListener("change", function () {
+    if (this.value === "Other") {
+      customGroup.style.display = "block";
+      customInput.required = true;
+    } else {
+      customGroup.style.display = "none";
+      customInput.value = "";
+      customInput.required = false;
+    }
+  });
+</script>
 
 </body>
 </html>
