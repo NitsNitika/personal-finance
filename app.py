@@ -26,6 +26,24 @@ def get_db():
     conn = sqlite3.connect(DATABASE)
     conn.row_factory = sqlite3.Row
     return conn
+def ui_to_db_date(date_str):
+    """
+    Accepts:
+    - DD/MM/YYYY
+    - YYYY-MM-DD
+    Returns:
+    - YYYY-MM-DD (DB safe)
+    """
+    try:
+        # Case 1: DD/MM/YYYY
+        if "/" in date_str:
+            return datetime.strptime(date_str, "%d/%m/%Y").strftime("%Y-%m-%d")
+
+        # Case 2: YYYY-MM-DD (already DB format)
+        return datetime.strptime(date_str, "%Y-%m-%d").strftime("%Y-%m-%d")
+
+    except ValueError:
+        raise ValueError("Invalid date format")
 
 def init_db():
     conn = get_db()
@@ -80,6 +98,31 @@ def init_db():
     conn.close()
 
 init_db()
+def upsert_salary(user_id, amount, date, description=None):
+    conn = get_db()
+
+    existing = conn.execute("""
+        SELECT id FROM income
+        WHERE user_id = ?
+        AND source = 'Salary'
+        AND strftime('%Y-%m', date) = strftime('%Y-%m', ?)
+    """, (user_id, date)).fetchone()
+
+    if existing:
+        conn.execute("""
+            UPDATE income
+            SET amount=?, date=?, description=?
+            WHERE id=?
+        """, (amount, date, description, existing["id"]))
+    else:
+        conn.execute("""
+            INSERT INTO income (user_id, source, amount, date, description)
+            VALUES (?, 'Salary', ?, ?, ?)
+        """, (user_id, amount, date, description))
+
+    conn.commit()
+    conn.close()
+
 
 def get_monthly_income(user_id):
     conn = get_db()
@@ -101,6 +144,82 @@ def get_monthly_income(user_id):
         result[key] = row["total"]
 
     return result
+# ================= MONTHLY SAVINGS CALCULATION =================
+def get_monthly_savings(user_id):
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT
+            d.month AS month,
+            COALESCE(SUM(i.amount), 0) - COALESCE(SUM(e.amount), 0) AS savings
+        FROM (
+            SELECT strftime('%Y-%m', date) AS month FROM income WHERE user_id = ?
+            UNION
+            SELECT strftime('%Y-%m', date) AS month FROM expenses WHERE user_id = ?
+        ) d
+        LEFT JOIN income i
+            ON strftime('%Y-%m', i.date) = d.month AND i.user_id = ?
+        LEFT JOIN expenses e
+            ON strftime('%Y-%m', e.date) = d.month AND e.user_id = ?
+        GROUP BY d.month
+        ORDER BY d.month
+    """, (user_id, user_id, user_id, user_id)).fetchall()
+
+    conn.close()
+
+    labels = []
+    values = []
+
+    for r in rows:
+        labels.append(r["month"])
+        values.append(float(r["savings"]))
+
+    return labels, values
+ 
+
+def get_monthly_financials(user_id):
+    conn = get_db()
+
+    rows = conn.execute("""
+        SELECT month,
+               SUM(income)  AS income,
+               SUM(expense) AS expense
+        FROM (
+            SELECT strftime('%Y-%m', date) AS month,
+                   SUM(amount) AS income,
+                   0 AS expense
+            FROM income
+            WHERE user_id = ?
+            GROUP BY month
+
+            UNION ALL
+
+            SELECT strftime('%Y-%m', date) AS month,
+                   0 AS income,
+                   SUM(amount) AS expense
+            FROM expenses
+            WHERE user_id = ?
+            GROUP BY month
+        )
+        GROUP BY month
+        ORDER BY month
+    """, (user_id, user_id)).fetchall()
+
+    conn.close()
+
+    result = []
+    for r in rows:
+        income = float(r["income"] or 0)
+        expense = float(r["expense"] or 0)
+        result.append({
+            "month": r["month"],
+            "income": income,
+            "expense": expense,
+            "savings": income - expense
+        })
+
+    return result
+
 
 
 @app.route("/dashboard")
@@ -109,15 +228,70 @@ def dashboard():
         return redirect(url_for("login"))
 
     conn = get_db()
+
+    # ================= USER =================
     user = conn.execute(
         "SELECT * FROM users WHERE id = ?",
         (session["user_id"],)
     ).fetchone()
+
+    # ================= MONTHLY INCOME =================
+    income_rows = conn.execute("""
+        SELECT strftime('%Y-%m', date) AS month,
+               SUM(amount) AS total
+        FROM income
+        WHERE user_id = ?
+        GROUP BY month
+        ORDER BY month
+    """, (session["user_id"],)).fetchall()
+
+    # ================= MONTHLY EXPENSE (FIXED TABLE NAME) =================
+    expense_rows = conn.execute("""
+        SELECT strftime('%Y-%m', date) AS month,
+               SUM(amount) AS total
+        FROM expenses
+        WHERE user_id = ?
+        GROUP BY month
+        ORDER BY month
+    """, (session["user_id"],)).fetchall()
+
+    income_dict = {r["month"]: float(r["total"]) for r in income_rows}
+    expense_dict = {r["month"]: float(r["total"]) for r in expense_rows}
+
+    months = sorted(set(income_dict) | set(expense_dict))
+    income_values = [income_dict.get(m, 0) for m in months]
+    expense_values = [expense_dict.get(m, 0) for m in months]
+
+    # ================= EXPENSE BREAKDOWN (FIXED TABLE NAME) =================
+    breakdown_rows = conn.execute("""
+        SELECT category, SUM(amount) AS total
+        FROM expenses
+        WHERE user_id = ?
+        GROUP BY category
+    """, (session["user_id"],)).fetchall()
+
+    categories = [r["category"] for r in breakdown_rows]
+    category_amounts = [float(r["total"]) for r in breakdown_rows]
+
+    # ================= SAVINGS GROWTH (CALCULATED, NO TABLE) =================
+    savings_months = months
+    savings_values = [
+        income_dict.get(m, 0) - expense_dict.get(m, 0)
+        for m in months
+    ]
+
     conn.close()
 
     return render_template(
         "dashboard.html",
-        user=user
+        user=user,
+        months=months,
+        income_values=income_values,
+        expense_values=expense_values,
+        categories=categories,
+        category_amounts=category_amounts,
+        savings_months=savings_months,
+        savings_values=savings_values
     )
 
 
@@ -373,19 +547,20 @@ def reset_password(token):
 UPLOAD_FOLDER = "static/uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-@app.route("/edit-profile", methods=["GET", "POST"])
+@app.route("/edit_profile", methods=["GET", "POST"])
 def edit_profile():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
     conn = get_db()
     user = conn.execute(
-        "SELECT * FROM users WHERE id = ?", (session["user_id"],)
+        "SELECT * FROM users WHERE id = ?",
+        (session["user_id"],)
     ).fetchone()
 
     if request.method == "POST":
-        name = request.form["name"]
-        email = request.form["email"]
+        name = request.form.get("name")
+        email = request.form.get("email")
 
         profile_pic = user["profile_pic"]
 
@@ -393,26 +568,23 @@ def edit_profile():
             file = request.files["profile_pic"]
             if file and file.filename:
                 filename = secure_filename(file.filename)
-                filepath = os.path.join(UPLOAD_FOLDER, filename)
-                file.save(filepath)
+                file.save(os.path.join("static/uploads", filename))
                 profile_pic = filename
 
-        try:
-            conn.execute(
-                "UPDATE users SET name = ?, email = ?, profile_pic = ? WHERE id = ?",
-                (name, email, profile_pic, session["user_id"])
-            )
-            conn.commit()
-            flash("Profile updated successfully!")
-            return redirect(url_for("dashboard"))
+        conn.execute("""
+            UPDATE users
+            SET name = ?, email = ?, profile_pic = ?
+            WHERE id = ?
+        """, (name, email, profile_pic, session["user_id"]))
 
-        except sqlite3.IntegrityError:
-            flash("Email already in use!")
-            return redirect(url_for("edit_profile"))
+        conn.commit()
+        conn.close()
+
+        flash("Profile updated successfully", "success")
+        return redirect(url_for("dashboard"))
 
     conn.close()
     return render_template("edit_profile.html", user=user)
-
 
 
 # ---------------- LOGOUT ----------------
@@ -455,7 +627,6 @@ def income_summary():
         monthly_income=monthly_income   # ✅ PASS TO TEMPLATE
     )
 
- 
 @app.route("/income/list")
 def manage_income():
     if "user_id" not in session:
@@ -489,7 +660,10 @@ def edit_income(id):
     if request.method == "POST":
         source = request.form["source"]
         amount = float(request.form["amount"])
-        date = request.form["date"]        # YYYY-MM-DD
+
+        raw_date = request.form["date"]      # 👈 FROM FORM (DD/MM/YYYY)
+        date = ui_to_db_date(raw_date)        # 👈 CONVERT TO YYYY-MM-DD
+
         description = request.form.get("description")
 
         conn.execute("""
@@ -497,6 +671,7 @@ def edit_income(id):
             SET source=?, amount=?, date=?, description=?
             WHERE id=? AND user_id=?
         """, (source, amount, date, description, id, session["user_id"]))
+
         conn.commit()
         conn.close()
 
@@ -536,6 +711,145 @@ def delete_income(id):
     conn.close()
     flash("Income deleted successfully", "danger")
     return redirect(url_for("delete_income_list"))
+ 
+
+# @app.route("/add-income", methods=["GET", "POST"])
+# def add_income():
+#     if "user_id" not in session:
+#         return redirect(url_for("login"))
+
+#     if request.method == "POST":
+#         income_source = request.form.get("income_source")
+#         other_income = request.form.get("other_income_source")
+#         amount_raw = request.form.get("amount")
+#         date = request.form.get("date")
+#         description = request.form.get("description")
+
+#         if not income_source:
+#             flash("Please select income source")
+#             return redirect(url_for("add_income"))
+
+#         if income_source == "Other" and not other_income:
+#             flash("Please enter other income source")
+#             return redirect(url_for("add_income"))
+
+#         if not date:
+#             flash("Please select a date")
+#             return redirect(url_for("add_income"))
+
+#         try:
+#             amount = float(amount_raw)
+#             if amount <= 0:
+#                 raise ValueError
+#         except:
+#             flash("Please enter a valid income amount")
+#             return redirect(url_for("add_income"))
+
+#         final_source = (
+#             other_income.strip()
+#             if income_source == "Other"
+#             else income_source
+#         )
+
+#         conn = get_db()
+#         conn.execute("""
+#             INSERT INTO income (user_id, source, amount, date, description)
+#             VALUES (?, ?, ?, ?, ?)
+#         """, (session["user_id"], final_source, amount, date, description))
+#         conn.commit()
+#         conn.close()
+
+#         flash("Income added successfully!")
+#         return redirect(url_for("income_summary"))
+
+#     return render_template("add_income.html")
+
+
+@app.route("/expense-management")
+def expense_management():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    category = request.args.get("category")
+    custom_category = request.args.get("custom_category")
+
+    from_raw = request.args.get("from_date")
+    to_raw = request.args.get("to_date")
+
+    # ✅ normalize
+    from_date = ui_to_db_date(from_raw) if from_raw else None
+    to_date = ui_to_db_date(to_raw) if to_raw else None
+
+    query = "SELECT * FROM expenses WHERE user_id=?"
+    params = [session["user_id"]]
+
+    if category:
+        if category == "Other" and custom_category:
+            query += " AND category=?"
+            params.append(custom_category.strip())
+        else:
+            query += " AND category=?"
+            params.append(category)
+
+    if from_date:
+        query += " AND date >= ?"
+        params.append(from_date)
+
+    if to_date:
+        query += " AND date <= ?"
+        params.append(to_date)
+
+    query += " ORDER BY date DESC"
+
+    conn = get_db()
+    expenses = conn.execute(query, params).fetchall()
+
+    total = conn.execute(
+        "SELECT COALESCE(SUM(amount),0) FROM (" + query + ") AS x",
+        params
+    ).fetchone()[0]
+
+    conn.close()
+
+    return render_template(
+        "expense_management.html",
+        expenses=expenses,
+        total=total
+    )
+
+# @app.route('/add-expense', methods=['GET', 'POST'])
+# def add_expense():
+#     if "user_id" not in session:
+#         return redirect(url_for("login"))
+
+#     if request.method == 'POST':
+#         category = request.form['category']
+#         custom_category = request.form.get('custom_category')
+
+#         final_category = (
+#             custom_category.strip()
+#             if category == "Other" and custom_category
+#             else category
+#         )
+
+#         conn = get_db()
+#         conn.execute(
+#             "INSERT INTO expenses (user_id, amount, category, date, note) VALUES (?, ?, ?, ?, ?)",
+#             (
+#                 session['user_id'],
+#                 request.form['amount'],
+#                 final_category,
+#                 request.form['date'],
+#                 request.form['note']
+#             )
+#         )
+#         conn.commit()
+#         conn.close()
+
+#         flash("Expense saved successfully", "success")
+#         return redirect(url_for("expense_management"))
+
+#     return render_template('add_expense.html')
 
 
 @app.route("/add-income", methods=["GET", "POST"])
@@ -547,27 +861,19 @@ def add_income():
         income_source = request.form.get("income_source")
         other_income = request.form.get("other_income_source")
         amount_raw = request.form.get("amount")
-        date = request.form.get("date")
+        raw_date = request.form.get("date")  # DD/MM/YYYY
         description = request.form.get("description")
 
-        if not income_source:
-            flash("Please select income source")
-            return redirect(url_for("add_income"))
-
-        if income_source == "Other" and not other_income:
-            flash("Please enter other income source")
-            return redirect(url_for("add_income"))
-
-        if not date:
-            flash("Please select a date")
+        try:
+            date = ui_to_db_date(raw_date)   # ✅ FIX
+        except:
+            flash("Use date format DD/MM/YYYY")
             return redirect(url_for("add_income"))
 
         try:
             amount = float(amount_raw)
-            if amount <= 0:
-                raise ValueError
         except:
-            flash("Please enter a valid income amount")
+            flash("Invalid amount")
             return redirect(url_for("add_income"))
 
         final_source = (
@@ -584,62 +890,10 @@ def add_income():
         conn.commit()
         conn.close()
 
-        flash("Income added successfully!")
+        flash("Income added successfully")
         return redirect(url_for("income_summary"))
 
     return render_template("add_income.html")
-
-
-@app.route("/expense-management")
-def expense_management():
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
-    category = request.args.get("category")
-    custom_category = request.args.get("custom_category")
-    from_date = request.args.get("from_date")
-    to_date = request.args.get("to_date")
-
-    query = "SELECT * FROM expenses WHERE user_id = ?"
-    params = [session["user_id"]]
-
-    # CATEGORY FILTER
-    if category:
-        if category == "Other" and custom_category:
-            query += " AND category = ?"
-            params.append(custom_category.strip())
-        else:
-            query += " AND category = ?"
-            params.append(category)
-
-    # DATE FILTER
-    if from_date:
-        query += " AND date >= ?"
-        params.append(from_date)
-
-    if to_date:
-        query += " AND date <= ?"
-        params.append(to_date)
-
-    query += " ORDER BY date DESC"
-
-    conn = get_db()
-    expenses = conn.execute(query, params).fetchall()
-
-    total = conn.execute(
-        f"SELECT COALESCE(SUM(amount), 0) FROM ({query})",
-        params
-    ).fetchone()[0]
-
-    conn.close()
-
-    return render_template(
-        "expense_management.html",
-        expenses=expenses,
-        total=total
-    )
-
-
 @app.route('/add-expense', methods=['GET', 'POST'])
 def add_expense():
     if "user_id" not in session:
@@ -648,6 +902,13 @@ def add_expense():
     if request.method == 'POST':
         category = request.form['category']
         custom_category = request.form.get('custom_category')
+        raw_date = request.form.get('date')  # DD/MM/YYYY
+
+        try:
+            date = ui_to_db_date(raw_date)   # ✅ FIX
+        except:
+            flash("Use date format DD/MM/YYYY")
+            return redirect(url_for("add_expense"))
 
         final_category = (
             custom_category.strip()
@@ -656,25 +917,23 @@ def add_expense():
         )
 
         conn = get_db()
-        conn.execute(
-            "INSERT INTO expenses (user_id, amount, category, date, note) VALUES (?, ?, ?, ?, ?)",
-            (
-                session['user_id'],
-                request.form['amount'],
-                final_category,
-                request.form['date'],
-                request.form['note']
-            )
-        )
+        conn.execute("""
+            INSERT INTO expenses (user_id, amount, category, date, note)
+            VALUES (?, ?, ?, ?, ?)
+        """, (
+            session['user_id'],
+            request.form['amount'],
+            final_category,
+            date,
+            request.form['note']
+        ))
         conn.commit()
         conn.close()
 
-        flash("Expense saved successfully", "success")
+        flash("Expense added successfully")
         return redirect(url_for("expense_management"))
 
     return render_template('add_expense.html')
-
-
 
 
 @app.route('/delete-expense/<int:id>')
@@ -692,108 +951,183 @@ def delete_expense(id):
     flash("Expense deleted successfully", "danger")
     return redirect(url_for("expense_management"))
 
-
 @app.route("/savings")
 def savings():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
     conn = get_db()
-    user_id = session["user_id"]
+    cursor = conn.cursor()
 
-    # ---------- TOTALS ----------
-    income = conn.execute(
-        "SELECT COALESCE(SUM(amount), 0) FROM income WHERE user_id = ?",
-        (user_id,)
-    ).fetchone()[0]
-
-    expense = conn.execute(
-        "SELECT COALESCE(SUM(amount), 0) FROM expenses WHERE user_id = ?",
-        (user_id,)
-    ).fetchone()[0]
-
-    income = round(float(income), 2)
-    expense = round(float(expense), 2)
-
-    # ✅ ABS SAVINGS
-    savings_amount = round(abs(income - expense), 2)
-
-    # ---------- MONTH LOGIC ----------
-    from datetime import datetime, timedelta
-
-    today = datetime.today()
-    current_month = today.strftime("%Y-%m")
-    last_month = (today.replace(day=1) - timedelta(days=1)).strftime("%Y-%m")
-
-    # Current month
-    current_income = conn.execute("""
+    # TOTAL INCOME (ALL TIME)
+    cursor.execute("""
         SELECT COALESCE(SUM(amount), 0)
         FROM income
         WHERE user_id = ?
-        AND strftime('%Y-%m', date) = ?
-    """, (user_id, current_month)).fetchone()[0]
+    """, (session["user_id"],))
+    total_income = cursor.fetchone()[0]
 
-    current_expense = conn.execute("""
+    # TOTAL EXPENSE (ALL TIME)
+    cursor.execute("""
         SELECT COALESCE(SUM(amount), 0)
         FROM expenses
         WHERE user_id = ?
-        AND strftime('%Y-%m', date) = ?
-    """, (user_id, current_month)).fetchone()[0]
+    """, (session["user_id"],))
+    total_expense = cursor.fetchone()[0]
 
-    current_income = float(current_income)
-    current_expense = float(current_expense)
-    current_savings = abs(current_income - current_expense)
-
-    # Last month
-    last_income = conn.execute("""
-        SELECT COALESCE(SUM(amount), 0)
-        FROM income
-        WHERE user_id = ?
-        AND strftime('%Y-%m', date) = ?
-    """, (user_id, last_month)).fetchone()[0]
-
-    last_expense = conn.execute("""
-        SELECT COALESCE(SUM(amount), 0)
-        FROM expenses
-        WHERE user_id = ?
-        AND strftime('%Y-%m', date) = ?
-    """, (user_id, last_month)).fetchone()[0]
-
-    last_income = float(last_income)
-    last_expense = float(last_expense)
-    last_savings = abs(last_income - last_expense)
-
-    # ---------- INSIGHT MESSAGE ----------
-    if current_savings > last_savings:
-        insight_message = "You saved more this month than last month 🎉"
-    elif current_savings < last_savings:
-        insight_message = "You saved less this month than last month ⚠️"
-    else:
-        insight_message = "Your savings are the same as last month ➖"
-
-    # ---------- CHART DATA (SAFE & READABLE) ----------
-    chart_data = {
-    "labels": ["Last Month", "This Month"],
-    "income": [last_income, current_income],
-    "expense": [last_expense, current_expense],
-    "savings": [last_savings, current_savings]
-}
-
+    # SAVINGS
+    total_savings = total_income - total_expense
 
     conn.close()
 
     return render_template(
         "savings.html",
-        total_income=income,
-        total_expense=expense,
-        savings=savings_amount,
-        chart_data=chart_data,
-        insight_message=insight_message
+        income=total_income,
+        expense=total_expense,
+        savings=total_savings
     )
 
 
+def get_savings_summary(user_id, range_type):
+    conn = get_db()
 
+    if range_type == "month":
+        date_filter = "date >= date('now','start of month')"
+    elif range_type == "6months":
+        date_filter = "date >= date('now','-6 months')"
+    else:  # year
+        date_filter = "date >= date('now','start of year')"
 
+    # TOTALS
+    income = conn.execute(
+        f"SELECT COALESCE(SUM(amount),0) FROM income WHERE user_id=? AND {date_filter}",
+        (user_id,)
+    ).fetchone()[0]
+
+    expense = conn.execute(
+        f"SELECT COALESCE(SUM(amount),0) FROM expenses WHERE user_id=? AND {date_filter}",
+        (user_id,)
+    ).fetchone()[0]
+
+    # MONTHLY BREAKUP FOR CHART
+    rows = conn.execute(f"""
+        SELECT month,
+               SUM(income)  AS income,
+               SUM(expense) AS expense
+        FROM (
+            SELECT strftime('%Y-%m', date) AS month,
+                   SUM(amount) AS income,
+                   0 AS expense
+            FROM income
+            WHERE user_id=? AND {date_filter}
+            GROUP BY month
+
+            UNION ALL
+
+            SELECT strftime('%Y-%m', date) AS month,
+                   0 AS income,
+                   SUM(amount) AS expense
+            FROM expenses
+            WHERE user_id=? AND {date_filter}
+            GROUP BY month
+        )
+        GROUP BY month
+        ORDER BY month
+    """, (user_id, user_id)).fetchall()
+
+    conn.close()
+
+    labels = []
+    incomes = []
+    expenses = []
+    savings = []
+
+    for r in rows:
+        labels.append(r["month"])
+        incomes.append(float(r["income"]))
+        expenses.append(float(r["expense"]))
+        savings.append(float(r["income"] - r["expense"]))
+
+    return {
+        "income": income,
+        "expense": expense,
+        "savings": income - expense,
+        "labels": labels,
+        "incomes": incomes,
+        "expenses": expenses,
+        "savings_list": savings
+    }
+@app.route("/api/savings/<range_type>")
+def api_savings(range_type):
+    if "user_id" not in session:
+        return {"error": "unauthorized"}, 401
+
+    user_id = session["user_id"]
+    conn = get_db()
+
+    if range_type == "month":
+        date_filter = "strftime('%Y-%m', date) = strftime('%Y-%m', 'now')"
+
+    elif range_type == "6months":
+        date_filter = "date >= date('now','-6 months')"
+
+    elif range_type == "year":
+        # ✅ SHOW ALL DATA (KEY FIX)
+        date_filter = "1=1"
+
+    else:
+        return {"error": "invalid range"}, 400
+
+    rows = conn.execute(f"""
+        SELECT strftime('%Y-%m', date) AS month,
+               SUM(income) AS income,
+               SUM(expense) AS expense
+        FROM (
+            SELECT date, amount AS income, 0 AS expense
+            FROM income
+            WHERE user_id=? AND {date_filter}
+
+            UNION ALL
+
+            SELECT date, 0 AS income, amount AS expense
+            FROM expenses
+            WHERE user_id=? AND {date_filter}
+        )
+        GROUP BY month
+        ORDER BY month
+    """, (user_id, user_id)).fetchall()
+
+    conn.close()
+
+    labels, incomes, expenses, savings_list = [], [], [], []
+    total_income = 0
+    total_expense = 0
+
+    for r in rows:
+        inc = float(r["income"] or 0)
+        exp = float(r["expense"] or 0)
+
+        labels.append(r["month"])
+        incomes.append(inc)
+        expenses.append(exp)
+        savings_list.append(inc - exp)
+
+        total_income += inc
+        total_expense += exp
+
+    return {
+        "labels": labels,
+        "incomes": incomes,
+        "expenses": expenses,
+        "savings_list": savings_list,
+        "income": total_income,
+        "expense": total_expense,
+        "savings": total_income - total_expense
+    }
+
+print(app.url_map)    
+
+   
 if __name__ == "__main__":
     app.run(debug=True)
-print(app.url_map)      
+  

@@ -1,53 +1,54 @@
+<!DOCTYPE html>
 <html>
 <head>
     <title>User Profile</title>
-
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 </head>
 
 <body>
-
 <div class="auth-container">
   <div class="auth-card profile-card">
 
     <h2 class="profile-title">User Profile</h2>
 
-    <!-- Avatar -->
     <div class="profile-avatar">
       {% if user['profile_pic'] %}
-        <img 
-          src="{{ url_for('static', filename='uploads/' + user['profile_pic']) }}" 
-          class="avatar-img"
-        >
+        <img src="{{ url_for('static', filename='uploads/' + user['profile_pic']) }}" class="avatar-img">
       {% else %}
-        <div class="avatar-circle">
-          <span>Profile</span>
-        </div>
+        <div class="avatar-circle"><span>Profile</span></div>
       {% endif %}
     </div>
 
-    <!-- User Info -->
     <h3 class="profile-name">{{ user['name'] }}</h3>
     <p class="profile-email">{{ user['email'] }}</p>
 
-    <!-- Actions -->
-    <div class="profile-actions">
-      <a href="{{ url_for('edit_profile') }}" class="btn-outline">Edit Profile ✏️</a>
-      <a href="{{ url_for('change_password') }}" class="btn-primary">Change Password 🔒</a>
-      <a href="/income" class="profile-box income-box">Income Management 💰</a>
-      <a href="/expense-management" class="profile-box expense-box">Expense Management 💸</a>
-      <a href="{{ url_for('savings') }}" class="profile-btn savings-btn">Savings 💰</a>
-      <a href="{{ url_for('logout') }}" class="btn-danger">Logout 🚪</a>
-    </div>
+   <div class="profile-actions">
+  <a href="{{ url_for('edit_profile') }}" class="btn-outline">Edit Profile ✏️</a>
+  <a href="{{ url_for('change_password') }}" class="btn-primary">Change Password 🔒</a>
+
+  <a href="{{ url_for('income_summary') }}" class="profile-box income-box">
+    Income Management 💰
+  </a>
+
+  <a href="{{ url_for('expense_management') }}" class="profile-box expense-box">
+    Expense Management 💸
+  </a>
+
+  <a href="{{ url_for('savings') }}" class="profile-btn savings-btn">
+    Savings 💰
+  </a>
+    <!-- 🔥 NEW FINANCIAL DASHBOARD BUTTON -->
+  <a href="{{ url_for('dashboard') }}" class="profile-box dashboard-box">
+    Financial Dashboard 📊
+  </a>
+
+  <a href="{{ url_for('logout') }}" class="btn-danger">
+    Logout 🚪
+  </a>
+</div>
 
 
   </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-
-
 </body>
 </html>

@@ -814,3 +814,42 @@ a:active {
 
 
  
+.flash-message {
+    padding: 12px 16px;
+    margin: 15px auto;
+    width: 90%;
+    max-width: 420px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-align: center;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.flash-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+/* Optional fade animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.dashboard-box {
+  border: 2px solid #131415;
+  color: #fff;
+  background: linear-gradient(135deg, #4f7cff, #6fa8ff);
+  padding: 14px;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: bold;
+  text-decoration: none;
+  display: block;
+}

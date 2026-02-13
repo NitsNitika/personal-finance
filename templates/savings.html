@@ -2,94 +2,227 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Savings Calculation</title>
-
-  <!-- Scoped Savings CSS -->
+  <title>Savings</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/savings.css') }}">
-
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
 
-<!-- 🔒 Scoped wrapper -->
-<div class="savings-page">
+<div class="container">
 
-  <!-- Back button -->
-  <a href="{{ url_for('dashboard') }}" class="back-dashboard-btn">
-    Back to Dashboard
-  </a>
+  <!-- BACK TO DASHBOARD -->
+  <div style="text-align:right; margin-bottom:20px;">
+    <a href="{{ url_for('dashboard') }}" class="back-dashboard-btn">
+      Back to Dashboard
+    </a>
+  </div>
 
-  <!-- Header -->
-  <h1>Savings Calculation</h1>
-  <p class="subtitle">
-    Automatic calculation: Savings = Income − Expenses
-  </p>
+  <!-- HEADER -->
+  <h1 class="title">Savings Calculator</h1>
+  <p class="subtitle">Savings = Total Income − Total Expenses</p>
 
-  <!-- ================= SUMMARY CARDS ================= -->
+  <!-- SUMMARY CARDS -->
   <div class="summary-cards">
 
-    <div class="summary-card income">
-      <img src="{{ url_for('static', filename='images/income.png') }}" class="card-icon" alt="Income">
-      <div class="card-text">
-        <span class="card-title">Income</span>
-        <span class="card-amount">₹ {{ "{:,.2f}".format(total_income) }}</span>
-
+    <!-- ✅ INCOME CARD (CLICKABLE VIA JS) -->
+    <div class="summary-card income" onclick="goIncome()" style="cursor:pointer;">
+      <div class="icon-box">
+        <img src="{{ url_for('static', filename='images/income.png') }}">
+      </div>
+      <div class="text">
+        <p>Income</p>
+        <h3 id="incomeValue">₹ 0</h3>
       </div>
     </div>
 
-    <div class="summary-card expense">
-      <img src="{{ url_for('static', filename='images/expense.png') }}" class="card-icon" alt="Expenses">
-      <div class="card-text">
-        <span class="card-title">Expenses</span>
-      <span class="card-amount">₹ {{ "{:,.2f}".format(total_expense) }}</span>
-
+    <!-- ✅ EXPENSE CARD (CLICKABLE VIA JS) -->
+    <div class="summary-card expense" onclick="goExpense()" style="cursor:pointer;">
+      <div class="icon-box">
+        <img src="{{ url_for('static', filename='images/expense.png') }}">
+      </div>
+      <div class="text">
+        <p>Expenses</p>
+        <h3 id="expenseValue">₹ 0</h3>
       </div>
     </div>
 
+    <!-- ❌ SAVINGS CARD (NOT CLICKABLE) -->
     <div class="summary-card saving">
-      <img src="{{ url_for('static', filename='images/saving.png') }}" class="card-icon" alt="Savings">
-      <div class="card-text">
-        <span class="card-title">Savings</span>
-        <span class="card-amount">₹ {{ "{:,.2f}".format(savings) }}</span>
-
+      <div class="icon-box">
+        <img src="{{ url_for('static', filename='images/saving.png') }}">
+      </div>
+      <div class="text">
+        <p>Savings</p>
+        <h3 id="savingValue">₹ 0</h3>
       </div>
     </div>
 
   </div>
 
-  <!-- ================= CHART SECTION ================= -->
-  <h2 class="section-title">Monthly Savings Trends</h2>
+  <h2>Monthly Savings Summary</h2>
 
-  <div class="content-row">
+  <!-- RANGE TOGGLE (UNCHANGED) -->
+  <div class="range-toggle">
+    <button class="range-btn" onclick="changeRange('month', this)">This Month</button>
+    <button class="range-btn active" onclick="changeRange('6months', this)">Last 6 Months</button>
+    <button class="range-btn" onclick="changeRange('year', this)">Year</button>
+  </div>
 
-    <!-- Chart Card -->
-    <div class="chart-card">
-      <!-- 🔥 FIX: Explicit height -->
-      <div style="height: 420px;">
-        <canvas id="savingsChart"></canvas>
-      </div>
+  <!-- MONTHLY + INSIGHT -->
+  <div class="monthly">
+    <div class="monthly-left">
+      <h2 id="monthLabel">Monthly Savings</h2>
+      <h1 id="monthSaving">—</h1>
+      <p id="savingRate"></p>
     </div>
 
-    <!-- Insight Card -->
-    <div class="insight-card">
-      {{ insight_message }}
+    <div class="monthly-right">
+      <h2>⚠ Insight</h2>
+      <p id="insightText">Savings depend on income & expense trend</p>
     </div>
+  </div>
 
+  <!-- CHART -->
+  <div class="chart-box">
+    <h1>Monthly Savings Trends</h1>
+    <canvas id="savingsChart"></canvas>
   </div>
 
 </div>
 
-<!-- ================= DATA PASS ================= -->
+<!-- ================= JAVASCRIPT ================= -->
 <script>
-  // SAFE JSON conversion
-  const chartData = {{ chart_data | tojson }};
+/* ================= CARD NAVIGATION (ONLY ADDITION) ================= */
+function goIncome() {
+  window.location.href = "{{ url_for('income_summary') }}";
+}
+
+function goExpense() {
+  window.location.href = "{{ url_for('expense_management') }}";
+}
+
+/* ================= YOUR ORIGINAL LOGIC ================= */
+let chart;
+
+function changeRange(range, btn) {
+  document.querySelectorAll(".range-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  loadSavings(range);
+}
+
+function loadSavings(range) {
+  fetch(`/api/savings/${range}`)
+    .then(res => res.json())
+    .then(data => {
+
+      incomeValue.innerText  = "₹ " + data.income.toLocaleString();
+      expenseValue.innerText = "₹ " + data.expense.toLocaleString();
+      savingValue.innerText  = "₹ " + data.savings.toLocaleString();
+
+      if (!data.labels || data.labels.length === 0) {
+        monthLabel.innerText = "No Data";
+        monthSaving.innerText = "₹ 0";
+        savingRate.innerText = "Savings Rate: 0%";
+        insightText.innerText = "No data available for this period";
+        return;
+      }
+
+      const last = data.labels.length - 1;
+      let currentSavings = 0;
+      let currentIncome  = 0;
+
+      if (range === "month") {
+        currentSavings = data.savings_list[last] || 0;
+        currentIncome  = data.incomes[last] || 0;
+      } else {
+        currentSavings = data.savings_list.reduce((a, b) => a + (b || 0), 0);
+        currentIncome  = data.incomes.reduce((a, b) => a + (b || 0), 0);
+      }
+
+      const currentLabel = data.labels[last];
+
+      if (range === "month") {
+        const [y, m] = currentLabel.split("-");
+        monthLabel.innerText = new Date(y, m - 1).toLocaleString("en-IN", {
+          month: "long",
+          year: "numeric"
+        });
+      } else if (range === "6months") {
+        monthLabel.innerText = "Last 6 Months";
+      } else {
+        monthLabel.innerText = "Year " + currentLabel.split("-")[0];
+      }
+
+      monthSaving.innerText = "₹ " + currentSavings.toLocaleString();
+
+      const rate = currentIncome > 0
+        ? Math.round((currentSavings / currentIncome) * 100)
+        : 0;
+
+      savingRate.innerText = "Savings Rate: " + rate + "%";
+      /* ===== INSIGHT (DYNAMIC & CHANGING) ===== */
+let insight = "";
+
+if (range === "month") {
+  if (last > 0) {
+    const prev = data.savings_list[last - 1] || 0;
+    const diff = currentSavings - prev;
+
+    if (diff > 0) {
+      insight = `📈 Savings increased by ₹${diff.toLocaleString()} compared to last month`;
+    } else if (diff < 0) {
+      insight = `📉 Savings decreased by ₹${Math.abs(diff).toLocaleString()} compared to last month`;
+    } else {
+      insight = "➖ Savings remained the same as last month";
+    }
+  } else {
+    insight = "ℹ Not enough data to compare with previous month";
+  }
+
+} else if (range === "6months") {
+  insight =
+    rate >= 50
+      ? "✅ Strong savings performance over the last 6 months"
+      : "⚠ Savings are low in the last 6 months, expenses may be high";
+
+} else if (range === "year") {
+  insight =
+    rate >= 50
+      ? "💪 Good yearly savings discipline"
+      : "⚠ Yearly savings rate is low, review expenses";
+}
+
+insightText.innerText = insight;
+
+
+      chart.data.labels = data.labels;
+      chart.data.datasets[0].data = data.incomes;
+      chart.data.datasets[1].data = data.expenses;
+      chart.data.datasets[2].data = data.savings_list;
+      chart.update();
+    });
+}
+
+const ctx = document.getElementById("savingsChart");
+
+chart = new Chart(ctx, {
+  type: "bar",
+  data: {
+    labels: [],
+    datasets: [
+      { label: "Income",   backgroundColor: "#4f7cff", data: [] },
+      { label: "Expenses", backgroundColor: "#ff6b6b", data: [] },
+      { label: "Savings",  backgroundColor: "#4caf50", data: [] }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false
+  }
+});
+
+loadSavings("6months");
 </script>
-
-<!-- Chart Logic -->
-<script src="{{ url_for('static', filename='js/savings.js') }}?v=5"></script>
-
 
 </body>
 </html>

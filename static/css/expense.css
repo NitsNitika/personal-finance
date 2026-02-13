@@ -485,3 +485,23 @@ table {
 .btn-cancel:hover {
   background: #e0e4eb;
 }
+.action-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+}
+
+.action-bar * {
+  pointer-events: auto;
+}
+
+.add-expense-btn {
+  z-index: 20;
+}
+
+.filter-btn {
+  z-index: 30;
+  cursor: pointer;
+}
