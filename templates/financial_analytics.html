@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Financial Analytics</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Global CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+  <!-- Analytics CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/financial_analytics.css') }}">
+</head>
+
+<body>
+    <div class="top-bar">
+  <a href="{{ url_for('profile') }}" class="back-btn">
+    Back to Dashboard
+  </a>
+</div>
+
+
+<div class="analytics-container">
+
+  <!-- TOP ROW -->
+  <div class="analytics-grid">
+
+    <!-- Income vs Expense -->
+    <div class="analytics-card">
+      <h2>Income vs Expense</h2>
+      <canvas id="incomeExpenseChart"></canvas>
+    </div>
+
+    <!-- Expense Breakdown -->
+    <div class="analytics-card">
+      <h2>Expense Breakdown</h2>
+      <canvas id="expensePieChart"></canvas>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM ROW -->
+  <div class="analytics-card full">
+    <h2>Savings Growth</h2>
+    <canvas id="savingsChart"></canvas>
+  </div>
+
+</div>
+
+<script>
+/* ================= Income vs Expense ================= */
+new Chart(document.getElementById("incomeExpenseChart"), {
+  type: "bar",
+  data: {
+    labels: {{ months | tojson }},
+    datasets: [
+      {
+        label: "Income",
+        data: {{ income_values | tojson }},
+        backgroundColor: "#4f7cff"
+      },
+      {
+        label: "Expense",
+        data: {{ expense_values | tojson }},
+        backgroundColor: "#ff6b6b"
+      }
+    ]
+  }
+});
+
+/* ================= Expense Breakdown ================= */
+new Chart(document.getElementById("expensePieChart"), {
+  type: "doughnut",
+  data: {
+    labels: {{ categories | tojson }},
+    datasets: [{
+      data: {{ category_amounts | tojson }},
+      backgroundColor: [
+        "#4f7cff",
+        "#ff6b6b",
+        "#9b59b6",
+        "#2ecc71",
+        "#f1c40f",
+        "#e67e22",
+        "#1abc9c"
+      ]
+    }]
+  }
+});
+
+/* ================= Savings Growth ================= */
+new Chart(document.getElementById("savingsChart"), {
+  type: "line",
+  data: {
+    labels: {{ savings_months | tojson }},
+    datasets: [{
+      label: "Savings",
+      data: {{ savings_values | tojson }},
+      borderColor: "#2ecc71",
+      backgroundColor: "rgba(46,204,113,0.2)",
+      fill: true,
+      tension: 0.4
+    }]
+  }
+});
+</script>
+
+
+</body>
+</html>

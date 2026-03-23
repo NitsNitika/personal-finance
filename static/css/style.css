@@ -853,3 +853,86 @@ a:active {
   text-decoration: none;
   display: block;
 }
+/* ================= FIX FINANCIAL ANALYTICS CLICK ================= */
+
+/* Ensure buttons are clickable */
+.profile-actions a {
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Remove any overlay blocking clicks */
+.auth-card::before,
+.auth-card::after {
+  pointer-events: none;
+}
+
+/* Extra safety */
+.auth-container {
+  pointer-events: auto;
+}
+/* TOP RIGHT BACK BUTTON */
+.back-btn {
+  position: fixed;
+  top: 25px;
+  right: 40px;
+  padding: 12px 28px;
+  background: #5b7cfa;
+  color: white;
+  text-decoration: none;
+  border-radius: 30px;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(91,124,250,0.3);
+  z-index: 1000;
+}
+
+.back-btn:hover {
+  background: #4868e0;
+}
+/* PAGE WRAPPER */
+.analytics-container {
+  max-width: 1400px;       /* ⬅️ was smaller */
+  margin: 0 auto;
+  padding: 40px;
+}
+
+/* GRID */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;               /* ⬅️ more breathing space */
+  margin-bottom: 32px;
+}
+
+/* CARD */
+.analytics-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 28px;           /* ⬅️ increased */
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* FULL WIDTH CARD */
+.analytics-card.full {
+  height: 460px;           /* ⬅️ bigger savings chart */
+}
+
+/* HEADINGS */
+.analytics-card h2 {
+  font-size: 22px;         /* ⬅️ bigger title */
+  margin-bottom: 18px;
+  font-weight: 600;
+}
+
+/* CHART SIZE */
+.analytics-card canvas {
+  width: 100% !important;
+  height: 400px !important; /* ⬅️ increased chart size */
+}
+
+/* FULL WIDTH CHART */
+.analytics-card.full canvas {
+  height: 460px !important;
+}

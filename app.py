@@ -1,4 +1,4 @@
-
+print("Flask imported successfully")
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 import uuid
@@ -8,7 +8,6 @@ import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
-
 app = Flask(__name__)
 app.secret_key = "finance_secret_key"
 
@@ -220,35 +219,60 @@ def get_monthly_financials(user_id):
 
     return result
 
-
-
 @app.route("/dashboard")
 def dashboard():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
     conn = get_db()
+    user = conn.execute(
+        "SELECT * FROM users WHERE id = ?",
+        (session["user_id"],)
+    ).fetchone()
+    conn.close()
 
-    # ================= USER =================
+    return render_template("dashboard.html", user=user)
+
+@app.route("/profile")
+def profile():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db()
+    user = conn.execute(
+        "SELECT * FROM users WHERE id = ?",
+        (session["user_id"],)
+    ).fetchone()
+    conn.close()
+    return render_template("dashboard.html", user=user)
+
+
+
+@app.route("/financial-analytics")
+def financial_analytics():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db()
+
+    # USER
     user = conn.execute(
         "SELECT * FROM users WHERE id = ?",
         (session["user_id"],)
     ).fetchone()
 
-    # ================= MONTHLY INCOME =================
+    # MONTHLY INCOME
     income_rows = conn.execute("""
-        SELECT strftime('%Y-%m', date) AS month,
-               SUM(amount) AS total
+        SELECT strftime('%Y-%m', date) AS month, SUM(amount) AS total
         FROM income
         WHERE user_id = ?
         GROUP BY month
         ORDER BY month
     """, (session["user_id"],)).fetchall()
 
-    # ================= MONTHLY EXPENSE (FIXED TABLE NAME) =================
+    # MONTHLY EXPENSE
     expense_rows = conn.execute("""
-        SELECT strftime('%Y-%m', date) AS month,
-               SUM(amount) AS total
+        SELECT strftime('%Y-%m', date) AS month, SUM(amount) AS total
         FROM expenses
         WHERE user_id = ?
         GROUP BY month
@@ -262,7 +286,7 @@ def dashboard():
     income_values = [income_dict.get(m, 0) for m in months]
     expense_values = [expense_dict.get(m, 0) for m in months]
 
-    # ================= EXPENSE BREAKDOWN (FIXED TABLE NAME) =================
+    # EXPENSE BREAKDOWN
     breakdown_rows = conn.execute("""
         SELECT category, SUM(amount) AS total
         FROM expenses
@@ -273,7 +297,7 @@ def dashboard():
     categories = [r["category"] for r in breakdown_rows]
     category_amounts = [float(r["total"]) for r in breakdown_rows]
 
-    # ================= SAVINGS GROWTH (CALCULATED, NO TABLE) =================
+    # SAVINGS
     savings_months = months
     savings_values = [
         income_dict.get(m, 0) - expense_dict.get(m, 0)
@@ -283,7 +307,7 @@ def dashboard():
     conn.close()
 
     return render_template(
-        "dashboard.html",
+        "financial_analytics.html",
         user=user,
         months=months,
         income_values=income_values,
@@ -713,58 +737,6 @@ def delete_income(id):
     return redirect(url_for("delete_income_list"))
  
 
-# @app.route("/add-income", methods=["GET", "POST"])
-# def add_income():
-#     if "user_id" not in session:
-#         return redirect(url_for("login"))
-
-#     if request.method == "POST":
-#         income_source = request.form.get("income_source")
-#         other_income = request.form.get("other_income_source")
-#         amount_raw = request.form.get("amount")
-#         date = request.form.get("date")
-#         description = request.form.get("description")
-
-#         if not income_source:
-#             flash("Please select income source")
-#             return redirect(url_for("add_income"))
-
-#         if income_source == "Other" and not other_income:
-#             flash("Please enter other income source")
-#             return redirect(url_for("add_income"))
-
-#         if not date:
-#             flash("Please select a date")
-#             return redirect(url_for("add_income"))
-
-#         try:
-#             amount = float(amount_raw)
-#             if amount <= 0:
-#                 raise ValueError
-#         except:
-#             flash("Please enter a valid income amount")
-#             return redirect(url_for("add_income"))
-
-#         final_source = (
-#             other_income.strip()
-#             if income_source == "Other"
-#             else income_source
-#         )
-
-#         conn = get_db()
-#         conn.execute("""
-#             INSERT INTO income (user_id, source, amount, date, description)
-#             VALUES (?, ?, ?, ?, ?)
-#         """, (session["user_id"], final_source, amount, date, description))
-#         conn.commit()
-#         conn.close()
-
-#         flash("Income added successfully!")
-#         return redirect(url_for("income_summary"))
-
-#     return render_template("add_income.html")
-
-
 @app.route("/expense-management")
 def expense_management():
     if "user_id" not in session:
@@ -817,39 +789,7 @@ def expense_management():
         total=total
     )
 
-# @app.route('/add-expense', methods=['GET', 'POST'])
-# def add_expense():
-#     if "user_id" not in session:
-#         return redirect(url_for("login"))
 
-#     if request.method == 'POST':
-#         category = request.form['category']
-#         custom_category = request.form.get('custom_category')
-
-#         final_category = (
-#             custom_category.strip()
-#             if category == "Other" and custom_category
-#             else category
-#         )
-
-#         conn = get_db()
-#         conn.execute(
-#             "INSERT INTO expenses (user_id, amount, category, date, note) VALUES (?, ?, ?, ?, ?)",
-#             (
-#                 session['user_id'],
-#                 request.form['amount'],
-#                 final_category,
-#                 request.form['date'],
-#                 request.form['note']
-#             )
-#         )
-#         conn.commit()
-#         conn.close()
-
-#         flash("Expense saved successfully", "success")
-#         return redirect(url_for("expense_management"))
-
-#     return render_template('add_expense.html')
 
 
 @app.route("/add-income", methods=["GET", "POST"])
