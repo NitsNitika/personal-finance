@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Smart Advisor</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/advisor.css') }}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+body { background:#f5f7fb; }
+
+.container {
+    position: relative;
+}
+
+.dashboard-btn {
+    background: #2563eb;
+    color: white !important;
+    padding: 8px 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.dashboard-btn:hover {
+    background: #1d4ed8;
+    transform: translateY(-2px);
+}
+
+/* FIXED TOP RIGHT DASHBOARD BUTTON */
+.header-row {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    z-index: 1000;
+}
+.badge {
+    color: black !important;
+    background-color: #e5e7eb; /* light gray background (optional for visibility) */
+    font-weight: 600;
+}
+.badge {
+    color: black !important;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container mt-4">
+
+<!-- 🔵 DASHBOARD BUTTON -->
+<div class="header-row">
+    <a href="/dashboard" class="dashboard-btn">Back to Dashboard</a>
+</div>
+
+<h2>🤖 Smart Advisor</h2>
+<p class="subtitle">Personalized financial strategy and spending insights.</p>
+
+<!-- TOP -->
+<div class="row mt-4">
+
+    <div class="col-md-5">
+        <div class="summary-card h-100">
+            <h5>💰 Savings Advisor</h5>
+            <h4 style="color:#10b981;">{{ risk_profile }}</h4>
+            <p class="subtitle">Based on your savings behavior</p>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div class="health-card h-100">
+            <h5>Financial Health Score</h5>
+            <h1>{{ health_score }} / 100</h1>
+
+            <small>Savings Rate</small>
+            <div class="progress">
+                <div class="progress-bar" style="width: {{ savings_rate }}%"></div>
+            </div>
+            <small>{{ savings_rate }}%</small>
+        </div>
+    </div>
+
+</div>
+
+<!-- MAIN -->
+<div class="row mt-4 align-items-stretch">
+
+    <!-- LEFT -->
+    <div class="col-md-7 d-flex">
+        <div class="card p-3 w-100 strategy-card">
+
+            <h5>📊 Strategy by Time Horizon</h5>
+            <p class="subtitle">Tailored to your {{ risk_profile.lower() }}</p>
+
+            <div id="recommended-banner"></div>
+
+            <div class="time-card mt-3">
+                <div class="time-tabs d-flex gap-2">
+                    <button class="time-btn active" onclick="showTab('short', this)">Short Term (Dyanmic Cash- Less than 1 year) </button>
+                    <button class="time-btn" onclick="showTab('medium', this)">Medium (Balanced Wealth - 2 to 5 years) </button>
+                    <button class="time-btn" onclick="showTab('long', this)">Long Term (Wealth Creation - 5+ years)</button>
+                </div>
+            </div>
+
+            <div id="strategy-container"></div>
+
+        </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="col-md-5 d-flex flex-column gap-3">
+
+        {% if alerts %}
+        <div class="alert-card">
+            <h6>⚠ Budget Alert</h6>
+            {% for alert in alerts %}
+            <p>{{ alert }}</p>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="good-card">
+            <h6>✔ Disciplined Spending</h6>
+            <p>Your spending is under control.</p>
+        </div>
+        {% endif %}
+
+        <div class="advice-card">
+            <h6>AI Advice</h6>
+            <p>{{ ai_advice }}</p>
+        </div>
+
+        <div class="card p-3 tip-card">
+            <h6>💡 Pro Tip</h6>
+            <p>"Do not save what is left after spending, but spend what is left after saving."</p>
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+
+<script>
+window.riskProfile = "{{ risk_profile }}";
+
+window.strategies = {
+    short: [
+        {title:"Liquid Mutual Funds", key:"liquid_funds"},
+        {title:"High Yield Savings", key:"high_yield_savings"},
+        {title:"Treasury Bills", key:"t_bills"}
+    ],
+    medium: [
+        {title:"Equity Savings Funds", key:"equity_savings"},
+        {title:"Corporate Bonds", key:"corporate_bonds"},
+        {title:"Gold ETF", key:"gold_etf"}
+    ],
+    long: [
+        {title:"Mid Small Cap", key:"mid_small_cap"},
+        {title:"PPF", key:"ppf"},
+        {title:"Nifty Next 50", key:"nifty_next50"}
+    ]
+};
+
+function showTab(type, el=null){
+
+    document.querySelectorAll(".time-btn").forEach(b=>b.classList.remove("active"));
+    if(el) el.classList.add("active");
+
+    const container = document.getElementById("strategy-container");
+    const banner = document.getElementById("recommended-banner");
+
+    container.innerHTML = "";
+
+    const risk = riskProfile.includes("HIGH") ? "high"
+                : riskProfile.includes("MEDIUM") ? "medium"
+                : "low";
+
+    document.querySelector(".time-card").className = "time-card mt-3 " + risk;
+
+    banner.innerHTML = `
+        <div class="banner-box">
+            ${risk==="high" ? "🚀 High growth investments recommended"
+            : risk==="medium" ? "⚖ Balanced investments recommended"
+            : "🛡 Safe investments recommended"}
+        </div>
+    `;
+
+    strategies[type].forEach((item,index)=>{
+
+        let badge = index===0 ? "⭐ Best" :
+                    index===1 ? "✔ Recommended" : "Safe";
+
+        const card = document.createElement("a");
+        card.href = `/investment/${type}/${item.key}`;
+        card.className = "advisor-card";
+
+        card.innerHTML = `
+            <div class="card-header">
+                <i class="bi bi-graph-up"></i>
+                <h5>${item.title}</h5>
+                <span class="badge">${badge}</span>
+            </div>
+            <p class="subtitle">Click for detailed analysis →</p>
+        `;
+
+        container.appendChild(card);
+    });
+}
+
+document.addEventListener("DOMContentLoaded",()=>showTab("short"));
+</script>
+
+</body>
+</html>

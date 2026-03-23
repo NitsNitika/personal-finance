@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Delete Goals</title>
+</head>
+<body>
+
+<h2>Delete Goals</h2>
+
+{% for g in goals %}
+  <div style="margin-bottom:10px;">
+    <b>{{ g.name }}</b> - ₹{{ g.target_amount }}
+
+    <a href="{{ url_for('delete_goal', goal_id=g.id) }}"
+       style="color:red; margin-left:10px;">
+       Delete
+    </a>
+  </div>
+{% endfor %}
+
+<a href="{{ url_for('goals') }}">⬅ Back</a>
+
+</body>
+</html>

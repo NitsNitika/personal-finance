@@ -1,0 +1,151 @@
+{% extends "dashboard.html" %}
+{% block content %}
+
+<style>
+/* ---------- PAGE ---------- */
+.page-title {
+    margin-bottom: 20px;
+}
+
+/* ---------- CARD ---------- */
+.edit-card {
+    background: white;
+    padding: 28px;
+    border-radius: 20px;
+    max-width: 520px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.06);
+}
+
+/* ---------- FORM ---------- */
+.edit-card label {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.edit-card input,
+.edit-card select {
+    width: 100%;
+    height: 38px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 14px;
+    margin-bottom: 14px;
+}
+
+/* ---------- ACTIONS ---------- */
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+}
+
+/* Save */
+.save-btn {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.save-btn:hover {
+    background: #1d4ed8;
+}
+
+/* Cancel */
+.cancel-btn {
+    background: #e5e7eb;
+    color: #111827;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.cancel-btn:hover {
+    background: #d1d5db;
+}
+
+/* Delete */
+.delete-btn {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background: #fecaca;
+}
+</style>
+
+<h1 class="page-title">✏️ Edit Goal</h1>
+
+<div class="edit-card">
+
+<form method="POST">
+
+    <label>Goal Name</label>
+    <input type="text"
+           name="goal_name"
+           value="{{ goal.name }}"
+           required>
+
+    <label>Target Amount (₹)</label>
+    <input type="number"
+           name="target_amount"
+           value="{{ goal.target_amount }}"
+           required>
+
+    <label>Target Date</label>
+    <input type="date"
+           name="target_date"
+           value="{{ goal.target_date }}"
+           required>
+
+    <label>Priority</label>
+    <select name="priority">
+        <option {% if goal.priority == "Medium" %}selected{% endif %}>Medium</option>
+        <option {% if goal.priority == "High" %}selected{% endif %}>High</option>
+        <option {% if goal.priority == "Low" %}selected{% endif %}>Low</option>
+    </select>
+
+    <!-- ACTIONS -->
+    <div class="actions">
+
+        <div>
+            <button type="submit" class="save-btn">
+                💾 Save Changes
+            </button>
+
+            <a href="/goals" class="cancel-btn">
+                Cancel
+            </a>
+        </div>
+
+        <!-- DELETE GOAL -->
+        <a href="/delete_goal/{{ goal.id }}"
+           onclick="return confirm('This will permanently delete the goal. Continue?')">
+            <button type="button" class="delete-btn">
+                🗑 Delete Goal
+            </button>
+        </a>
+
+    </div>
+
+</form>
+
+</div>
+
+{% endblock %}

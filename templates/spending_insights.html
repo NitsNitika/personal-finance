@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Spending Insights</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+    font-family: 'Segoe UI', sans-serif;
+    background:#f4f7fb;
+    margin:0;
+    padding:30px;
+}
+
+/* HEADER */
+h2{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+/* CARDS */
+.top-cards{
+    display:flex;
+    gap:20px;
+    margin:20px 0;
+}
+
+.card{
+    flex:1;
+    background:white;
+    padding:18px;
+    border-radius:14px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.05);
+}
+
+.blue{border-left:5px solid #2563eb;}
+.red{border-left:5px solid #ef4444;}
+.green{border-left:5px solid #16a34a;}
+
+.card strong{
+    font-size:20px;
+}
+
+/* CHART SECTION */
+.charts{
+    display:flex;
+    gap:20px;
+}
+
+.chart-box{
+    flex:1;
+    background:white;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.05);
+}
+
+/* FIXED DONUT SIZE */
+#donutChart{
+    max-width:250px;
+    margin:auto;
+}
+
+/* INSIGHT */
+.insight{
+    margin-top:20px;
+    background:#eef5ff;
+    padding:15px;
+    border-left:5px solid #2563eb;
+    border-radius:10px;
+}
+
+/* TABLE */
+.table-box{
+    margin-top:25px;
+    background:white;
+    padding:20px;
+    border-radius:14px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.05);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th, td{
+    padding:10px;
+    border-bottom:1px solid #eee;
+    text-align:left;
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.back-btn{
+    padding:10px 16px;
+    background:#2563eb;
+    color:white;
+    text-decoration:none;
+    border-radius:8px;
+    font-weight:500;
+    transition:all 0.3s ease;
+}
+
+.back-btn:hover{
+    background:#1e40af;
+    transform:translateY(-2px);
+    box-shadow:0 8px 18px rgba(37,99,235,0.3);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    <h2>📊 Smart Spending Insights</h2>
+    <a href="/dashboard" class="back-btn">Back to Dashboard</a>
+</div>
+
+<!-- TOP CARDS -->
+<div class="top-cards">
+    <div class="card blue">
+        Needs Spending<br>
+        <strong>₹{{ total_needs }}</strong>
+    </div>
+
+    <div class="card red">
+        Wants Spending<br>
+        <strong>₹{{ total_wants }}</strong>
+    </div>
+
+    <div class="card green">
+        Financial Health<br>
+        <strong>{{ health_score }}/100</strong>
+    </div>
+</div>
+
+<!-- CHARTS -->
+<div class="charts">
+
+    <!-- DONUT -->
+    <div class="chart-box">
+        <h4>Needs vs Wants</h4>
+        <canvas id="donutChart"></canvas>
+    </div>
+
+    <!-- BAR -->
+    <div class="chart-box">
+        <h4>Monthly Trend</h4>
+        <canvas id="barChart"></canvas>
+    </div>
+
+</div>
+
+<!-- INSIGHT -->
+<div id="aiInsight" class="insight">
+    {{ overall_insight }}
+</div>
+
+<!-- TABLE -->
+<div class="table-box">
+    <h3>🏆 Monthly Leaderboard</h3>
+
+    <table>
+        <tr>
+            <th>Month</th>
+            <th>Wants %</th>
+            <th>Score</th>
+            <th>Badge</th>
+        </tr>
+
+        {% for row in leaderboard %}
+        <tr>
+            <td>{{ row.month }}</td>
+            <td>{{ row.wants_pct }}%</td>
+            <td>{{ row.score }}/100</td>
+            <td>{{ row.badge }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<script>
+
+/* DATA */
+const months = {{ months | tojson }};
+const needsData = {{ needs_values | tojson }};
+const wantsData = {{ wants_values | tojson }};
+const monthlyInsights = {{ monthly_insights | tojson }};
+
+/* DONUT */
+new Chart(document.getElementById('donutChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Needs','Wants'],
+        datasets: [{
+            data: [
+                needsData.reduce((a,b)=>a+b,0),
+                wantsData.reduce((a,b)=>a+b,0)
+            ],
+            backgroundColor:['#2563eb','#ef4444']
+        }]
+    },
+    options:{
+        plugins:{ legend:{ position:'bottom' } },
+        cutout:'60%'
+    }
+});
+
+/* BAR */
+new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+        labels: months,
+        datasets: [
+            { label:'Needs', data: needsData, backgroundColor:'#2563eb' },
+            { label:'Wants', data: wantsData, backgroundColor:'#ef4444' }
+        ]
+    },
+    options:{
+        onHover:(e,el)=>{
+            if(el.length){
+                const i = el[0].index;
+                document.getElementById("aiInsight").innerText =
+                    monthlyInsights[months[i]];
+            }
+        }
+    }
+});
+
+</script>
+
+</body>
+</html>
+

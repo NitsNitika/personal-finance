@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+    body {
+        background: #f5f7fb;
+    }
+
+    .admin-container {
+        max-width: 1100px;
+        margin: auto;
+        padding: 20px;
+    }
+
+    .admin-title {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .admin-cards {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .admin-card {
+        flex: 1;
+        padding: 20px;
+        border-radius: 12px;
+        color: white;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .income-card {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .expense-card {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    .goal-card {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .admin-table th, .admin-table td {
+        padding: 12px;
+        text-align: left;
+    }
+
+    .admin-table th {
+        background: #111;
+        color: white;
+    }
+
+    .admin-table tr:nth-child(even) {
+        background: #f3f4f6;
+    }
+
+    .role-admin {
+        color: green;
+        font-weight: bold;
+    }
+
+    .role-user {
+        color: gray;
+    }
+
+    .back-btn {
+        display: inline-block;
+        margin-bottom: 20px;
+        text-decoration: none;
+        background: #2563eb;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 8px;
+    }
+
+    .back-btn:hover {
+        background: #1d4ed8;
+    }
+
+    /* DELETE */
+    .delete-btn {
+        background: #ef4444;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 14px;
+        display: inline-block;
+        margin-top: 5px;
+    }
+
+    .delete-btn:hover {
+        background: #dc2626;
+    }
+
+    /* MAKE ADMIN */
+    .make-admin-btn {
+        background: #10b981;
+        color: white;
+        padding: 6px 10px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 13px;
+        display: inline-block;
+    }
+
+    .make-admin-btn:hover {
+        background: #059669;
+    }
+
+    /* REMOVE ADMIN */
+    .remove-admin-btn {
+        background: #f59e0b;
+        color: white;
+        padding: 6px 10px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 13px;
+        display: inline-block;
+    }
+
+    .remove-admin-btn:hover {
+        background: #d97706;
+    }
+
+    .self-label {
+        color: gray;
+        font-style: italic;
+    }
+    </style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const income = Number("{{ total_income }}");
+    const expense = Number("{{ total_expense }}");
+
+    const ctx = document.getElementById('financeChart').getContext('2d');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Income', 'Expense'],
+            datasets: [{
+                label: 'Amount (₹)',
+                data: [income, expense],
+                backgroundColor: ['#10b981', '#ef4444']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+});
+</script>
+</head>
+
+<body>
+
+<div class="admin-container">
+
+    <a href="/profile" class="back-btn">← Back to Profile</a>
+
+    <h2 class="admin-title">⚙ Admin Dashboard</h2>
+
+    <!-- CARDS -->
+    <div class="admin-cards">
+
+        <div class="admin-card income-card">
+            <p>Total Income</p>
+            <h2>₹ {{ total_income }}</h2>
+        </div>
+
+        <div class="admin-card expense-card">
+            <p>Total Expense</p>
+            <h2>₹ {{ total_expense }}</h2>
+        </div>
+
+        <div class="admin-card goal-card">
+            <p>Total Goals</p>
+            <h2>{{ total_goals }}</h2>
+        </div>
+
+    </div>
+
+    <!-- CHART -->
+    <div style="background:white; padding:20px; border-radius:12px; margin-bottom:30px; height:300px;">
+        <h3>Financial Overview</h3>
+        <canvas id="financeChart"></canvas>
+    </div>
+
+    <!-- USERS -->
+    <h3>All Users</h3>
+
+    <table class="admin-table">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Action</th>
+        </tr>
+
+        {% for u in users %}
+        <tr>
+            <td>{{ u.id }}</td>
+            <td>{{ u.name }}</td>
+            <td>{{ u.email }}</td>
+
+            <td>
+                {% if u.role and u.role|lower == "admin" %}
+                    <span class="role-admin">Admin</span>
+                {% else %}
+                    <span class="role-user">User</span>
+                {% endif %}
+            </td>
+
+            <td>
+                {% if u.id != session['user_id'] %}
+
+                    {% if u.role and u.role|lower == "admin" %}
+                        <a href="/toggle-admin/{{ u.id }}"
+                           onclick="return confirm('Remove admin access?')"
+                           class="remove-admin-btn">
+                            Remove Admin
+                        </a>
+                    {% else %}
+                        <a href="/toggle-admin/{{ u.id }}"
+                           onclick="return confirm('Make this user admin?')"
+                           class="make-admin-btn">
+                            Make Admin
+                        </a>
+                    {% endif %}
+
+                    <br>
+
+                    <a href="/delete_user/{{ u.id }}"
+                       onclick="return confirm('Are you sure you want to delete this user?')"
+                       class="delete-btn">
+                        Delete ❌
+                    </a>
+
+                {% else %}
+                    <span class="self-label">You</span>
+                {% endif %}
+            </td>
+
+        </tr>
+        {% endfor %}
+
+    </table>
+
+</div>
+
+</body>
+</html>

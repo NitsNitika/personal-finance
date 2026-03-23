@@ -1,0 +1,76 @@
+/* ===== Financial Analytics Page ===== */
+
+body {
+  background: #f5f7fb;
+  margin: 0;
+  padding: 30px;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* Main wrapper */
+.analytics-container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Top 2 cards layout */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  margin-bottom: 25px;
+}
+
+/* Card style */
+.analytics-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Full-width card */
+.analytics-card.full {
+  width: 100%;
+}
+
+/* Card title */
+.analytics-card h2 {
+  margin-bottom: 15px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* Canvas control */
+.analytics-card canvas {
+  max-height: 320px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.back-wrapper {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.back-btn {
+  display: inline-block;
+  padding: 14px 40px;
+  background: linear-gradient(135deg, #4f7cff, #6b8cff);
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 30px;
+  box-shadow: 0 10px 25px rgba(79,124,255,0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.back-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 35px rgba(79,124,255,0.45);
+}

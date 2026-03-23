@@ -1,0 +1,125 @@
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f5f7fb;
+  padding:20px;
+}
+
+.card{
+  background:#fff;
+  border-radius:14px;
+  padding:18px;
+  margin-bottom:18px;
+  box-shadow:0 8px 24px rgba(0,0,0,.08);
+}
+
+.row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+input,select,button{
+  padding:10px;
+  border-radius:8px;
+  border:1px solid #ddd;
+}
+
+button{cursor:pointer}
+
+.btn-primary{background:#0d6efd;color:#fff;border:none}
+.btn-success{background:#198754;color:#fff;border:none}
+.btn-danger{background:#dc3545;color:#fff;border:none}
+
+.progress{
+  height:12px;
+  background:#eee;
+  border-radius:20px;
+  overflow:hidden;
+  margin:8px 0;
+}
+
+.progress-bar{
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,#4facfe,#00f2fe);
+  transition:width 1.2s ease;
+}
+
+.badge{
+  padding:4px 10px;
+  border-radius:12px;
+  font-size:12px;
+  color:#fff;
+}
+
+.High{background:#dc3545}
+.Medium{background:#fd7e14}
+.Low{background:#198754}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+th,td{
+  padding:10px;
+  border-bottom:1px solid #eee;
+}
+th{background:#f8f9fa}
+
+.muted{color:#6c757d;font-size:13px}
+.ai{color:#198754}
+.success{color:#198754;font-weight:bold}
+
+/* TOASTS */
+#toast-container{
+  position:fixed;
+  top:20px;
+  right:20px;
+  z-index:9999;
+}
+
+.toast{
+  background:#fff3cd;
+  color:#664d03;
+  padding:14px 18px;
+  margin-bottom:10px;
+  border-left:6px solid #ffc107;
+  border-radius:8px;
+  min-width:280px;
+  box-shadow:0 10px 25px rgba(0,0,0,.15);
+  animation:slideIn .5s ease;
+}
+
+.toast.High{
+  background:#fde2e1;
+  border-left-color:#dc3545;
+  color:#842029;
+}
+.toast.Medium{
+  background:#fff3cd;
+  border-left-color:#fd7e14;
+  color:#664d03;
+}
+.toast.Low{
+  background:#e6f4ea;
+  border-left-color:#198754;
+  color:#0f5132;
+}
+
+.toast .actions{
+  margin-top:8px;
+  display:flex;
+  gap:10px;
+}
+.toast button{
+  background:none;
+  border:none;
+  font-size:12px;
+  cursor:pointer;
+  text-decoration:underline;
+}
+
+@keyframes slideIn{
+  from{opacity:0;transform:translateX(40px)}
+  to{opacity:1;transform:translateX(0)}
+}

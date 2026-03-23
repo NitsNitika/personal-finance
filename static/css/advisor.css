@@ -1,0 +1,364 @@
+/* GENERAL */
+body {
+    background: #f5f7fb;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.subtitle {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+/* BANNER */
+.banner-box {
+    background: linear-gradient(135deg, #2563eb, #4f46e5);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+/* CARDS */
+.summary-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.health-card {
+    background: linear-gradient(135deg, #3b3b98, #5f27cd);
+    color: white;
+    border-radius: 18px;
+    padding: 25px;
+}
+
+.strategy-card {
+    border-radius: 16px;
+}
+
+/* ALERTS */
+.alert-card {
+    background: #ffecec;
+    border-left: 5px solid #ef4444;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.good-card {
+    background: #e6f9f0;
+    border-left: 5px solid #10b981;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.advice-card {
+    background: #eef2ff;
+    border-left: 5px solid #6366f1;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+/* TABS */
+.tabs button {
+    background: #e5e7eb;
+    border: none;
+    padding: 8px 16px;
+    margin-right: 10px;
+    border-radius: 10px;
+}
+
+.tabs .active {
+    background: #2563eb;
+    color: white;
+}
+
+/* INVESTMENT CARDS */
+.advisor-card {
+    display: block;
+    padding: 18px;
+    margin-top: 15px;
+    border-radius: 14px;
+    background: white;
+    text-decoration: none;
+    color: black;
+    transition: 0.3s;
+}
+
+.advisor-card:hover {
+    transform: translateY(-5px) scale(1.02);
+}
+
+/* HEADER */
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-header i {
+    font-size: 20px;
+    color: #2563eb;
+}
+
+/* BADGES */
+.badge {
+    margin-left: auto;
+    padding: 4px 10px;
+    font-size: 12px;
+    border-radius: 20px;
+}
+
+.badge.best {
+    background: #facc15;
+}
+
+.badge.recommended {
+    background: #10b981;
+    color: white;
+}
+
+.badge.safe {
+    background: #e5e7eb;
+}
+
+/* BEST CARD */
+.best-card {
+    border: 2px solid #facc15;
+    box-shadow: 0 0 15px rgba(250,204,21,0.4);
+}
+
+/* PROGRESS */
+.progress {
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 10px;
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 10px;
+    background: #10b981;
+}
+
+/* LAYOUT FIX */
+.row.align-items-stretch > div {
+    display: flex;
+}
+
+.col-md-7 .card {
+    height: 100%;
+}
+
+.col-md-5 {
+    display: flex;
+    flex-direction: column;
+}
+
+.col-md-5 > div {
+    flex: 1;
+}
+
+/* MAIN */
+.main-card {
+    border-radius: 18px;
+}
+
+/* AI BUTTON */
+.ai-btn {
+    background: #2563eb;
+    color: white;
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 15px;
+    text-align: center;
+}
+
+/* PROS */
+.pros-box {
+    background: #e6f9f0;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+/* CONS */
+.cons-box {
+    background: #ffecec;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+/* RIGHT */
+.return-card {
+    background: #2563eb;
+    color: white;
+    padding: 25px;
+    border-radius: 16px;
+    text-align: center;
+}
+
+.risk-card {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    text-align: center;
+}
+
+/* HEADER */
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+
+.risk-fill.low { width: 30%; background: #10b981; }
+.risk-fill.medium { width: 60%; background: #f59e0b; }
+.risk-fill.high { width: 90%; background: #ef4444; }
+
+/* BACK BUTTON POSITION */
+.back-btn {
+    display: inline-block;
+    margin-top: -10px;
+    margin-bottom: 10px;
+    background: #2563eb;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+}
+
+/* MAIN CARD */
+.main-card {
+    border-radius: 16px;
+}
+
+/* PROS */
+.pros-box {
+    background: #e6f7f1;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+/* CONS */
+.cons-box {
+    background: #fde8e8;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+
+
+/* RIGHT SIDE FIX */
+.return-card, .risk-card {
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 16px;
+}
+
+/* RETURN */
+.return-card {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    text-align: center;
+}
+
+/* RISK */
+.risk-card {
+    background: #f3f4f6;
+    text-align: center;
+}
+
+/* LABEL */
+.label {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+/* EXTRA INFO */
+.extra-box {
+    background: #eef2ff;
+    padding: 12px;
+    border-radius: 10px;
+}
+
+/* ACTIVE TAB WITH GRADIENT */
+.time-btn.active {
+    color: white;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+}
+
+/* 🔥 RISK COLORS */
+.time-card.low .time-btn.active {
+    background: linear-gradient(135deg, #22c55e, #16a34a); /* green */
+}
+
+.time-card.medium .time-btn.active {
+    background: linear-gradient(135deg, #3b82f6, #2563eb); /* blue */
+}
+
+.time-card.high .time-btn.active {
+    background: linear-gradient(135deg, #ef4444, #7c3aed); /* red → purple */
+}
+
+.time-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: 500;
+    color: #6b7280;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.time-btn:focus {
+    outline: none;
+}
+
+.time-btn.active {
+    transform: scale(1.02);
+}
+
+/* INVEST BUTTON BASE */
+.invest-btn {
+    display: inline-block;
+    padding: 14px 32px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none !important;
+
+    /* ✅ FORCE TEXT VISIBLE */
+    color: #ffffff !important;
+
+    /* fallback color */
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+
+    transition: all 0.3s ease;
+}
+
+/* LOW RISK */
+.invest-btn.low {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+/* MEDIUM */
+.invest-btn.medium {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+/* HIGH */
+.invest-btn.high {
+    background: linear-gradient(135deg, #ef4444, #7c3aed);
+}
+
+/* HOVER */
+.invest-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+}
+
