@@ -1,5 +1,8 @@
 print("Flask imported successfully")
+from flask import jsonify
 from flask import Flask, render_template, request, redirect, url_for, session, flash
+import json
+from flask import Flask, render_template, request, jsonify
 import sqlite3
 import uuid
 import random
@@ -8,9 +11,21 @@ import os
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from datetime import datetime
+goals = []
+goal_id = 1
 app = Flask(__name__)
 app.secret_key = "finance_secret_key"
+# -------- LOAD & SAVE --------
+def load_goals():
+    try:
+        with open("goals.json", "r") as f:
+            return json.load(f)
+    except:
+        return []
 
+def save_goals(goals):
+    with open("goals.json", "w") as f:
+        json.dump(goals, f)
 DATABASE = "instance/database.db"
 # ================= JINJA DATE FILTER =================
 @app.template_filter("pretty_date")
@@ -1064,10 +1079,96 @@ def api_savings(range_type):
         "expense": total_expense,
         "savings": total_income - total_expense
     }
+# ================= GOALS (FINAL VERSION) =================
 
-print(app.url_map)    
+import json
+from flask import request, jsonify, render_template
 
-   
+# -------- LOAD & SAVE --------
+def load_goals():
+    try:
+        with open("goals.json", "r") as f:
+            return json.load(f)
+    except:
+        return []
+
+def save_goals(goals):
+    with open("goals.json", "w") as f:
+        json.dump(goals, f)
+
+
+# -------- GOALS PAGE --------
+@app.route("/goals")
+def goals_page():
+    goals = load_goals()
+
+    # ✅ SAFE CALCULATION (prevents Jinja error)
+    total = sum(g.get("saved", 0) for g in goals)
+    active = len(goals)
+
+    return render_template("goals.html", goals=goals, total=total, active=active)
+
+
+# -------- ADD GOAL --------
+@app.route("/add_goal", methods=["POST"])
+def add_goal():
+    data = request.json
+    goals = load_goals()
+
+    # ✅ VALIDATION
+    if not data.get("title") or not data.get("target"):
+        return jsonify({"error": "Missing fields"})
+
+    new_goal = {
+        "id": len(goals) + 1,
+        "title": data["title"],
+        "target": float(data["target"]),
+        "saved": 0,
+        "priority": data.get("priority", "Medium"),
+        "date": data.get("date")
+    }
+
+    goals.append(new_goal)
+    save_goals(goals)
+
+    return jsonify({"success": True})
+
+
+# -------- ADD MONEY --------
+@app.route("/update_goal/<int:id>", methods=["POST"])
+def update_goal(id):
+    data = request.json
+    amount = float(data.get("amount", 0))
+
+    goals = load_goals()
+
+    for g in goals:
+        if g["id"] == id:
+
+            # ❌ INVALID INPUT
+            if amount <= 0:
+                return jsonify({"error": "Invalid amount"})
+
+            # ❌ OVERFLOW PREVENTION
+            if g.get("saved", 0) + amount > g.get("target", 0):
+                return jsonify({"error": "Amount exceeds target"})
+
+            # ✅ UPDATE
+            g["saved"] = g.get("saved", 0) + amount
+
+    save_goals(goals)
+    return jsonify({"success": True})
+
+
+# -------- DELETE GOAL --------
+@app.route("/delete_goal/<int:id>", methods=["POST"])
+def delete_goal(id):
+    goals = load_goals()
+
+    goals = [g for g in goals if g["id"] != id]
+
+    save_goals(goals)
+    return jsonify({"success": True})
 if __name__ == "__main__":
     app.run(debug=True)
   

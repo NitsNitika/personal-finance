@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Goals</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/goals.css') }}">
+</head>
+
+<body>
+
+<div class="page">
+  <div class="main-card">
+
+    <!-- HEADER -->
+    <div class="header">
+      <div>
+        <h1>Goals 🎯</h1>
+        <p>Track your progress towards Financial Freedom</p>
+      </div>
+
+      <button class="create-btn" onclick="openModal()">Create Goal</button>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+
+      <div class="card savings">
+        <p>Total Savings</p>
+        <h2>₹{{ total }}</h2>
+      </div>
+
+      <div class="card goals">
+        <p>Goals Active</p>
+        <h2>{{ active }}</h2>
+      </div>
+
+    </div>
+
+    <!-- GOALS LIST -->
+    {% if goals|length == 0 %}
+        <div class="no-goals">
+            No goals yet 🚀
+        </div>
+    {% else %}
+
+        {% for goal in goals %}   <!-- ✅ FIXED (NO MORE g ERROR) -->
+
+        <div class="goal-card {{ goal.priority | lower }}">
+
+            <!-- HEADER -->
+            <div class="goal-header">
+                <h3>{{ goal.title }}</h3>
+
+                <span>
+                    {{ [((goal.saved / goal.target) * 100), 100] | min | round(0) }}%
+                </span>
+            </div>
+
+            <!-- PROGRESS -->
+            <div class="progress-bar">
+                <div class="progress {{ goal.priority | lower }}"
+                     style="width: {{ [((goal.saved / goal.target) * 100), 100] | min }}%">
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="goal-footer">
+                <p>
+                    ₹<span id="saved-{{ goal.id }}">{{ goal.saved }}</span> /
+                    ₹<span id="target-{{ goal.id }}">{{ goal.target }}</span>
+                </p>
+
+                <span class="badge {{ goal.priority | lower }}">
+                    {{ goal.priority }}
+                </span>
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="goal-actions">
+
+                <input type="number"
+                       id="amount-{{ goal.id }}"
+                       placeholder="₹ Add money"
+                       min="1"
+                       {% if goal.saved >= goal.target %}disabled{% endif %}>
+
+                <button onclick="addMoney({{ goal.id }})"
+                        {% if goal.saved >= goal.target %}disabled{% endif %}>
+                    Add
+                </button>
+
+                <button onclick="deleteGoal({{ goal.id }})" class="delete">
+                    Delete
+                </button>
+            </div>
+
+            <!-- COMPLETED -->
+            {% if goal.saved >= goal.target %}
+                <div class="goal-complete">
+                    🎉 Goal Achieved!
+                </div>
+            {% endif %}
+
+        </div>
+
+        {% endfor %}
+
+    {% endif %}
+
+  </div>
+</div>
+
+<!-- ================= MODALS ================= -->
+
+<!-- CREATE GOAL -->
+<div id="goalModal" class="modal">
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h2>Create New Goal</h2>
+      <span class="close-btn" onclick="closeModal()">×</span>
+    </div>
+
+    <input type="text" id="title" placeholder="Goal Name">
+    <input type="number" id="target" placeholder="Goal Amount">
+    <input type="date" id="date">
+
+    <select id="priority">
+      <option>High</option>
+      <option selected>Medium</option>
+      <option>Low</option>
+    </select>
+
+    <button class="save-btn" onclick="createGoal()">Save Goal</button>
+
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div id="deleteModal" class="modal">
+  <div class="modal-content delete-box">
+
+    <h2 class="delete-title">Delete Goal</h2>
+
+    <p class="delete-text">
+      Are you sure you want to delete this goal?
+    </p>
+
+    <div class="delete-actions">
+        <button class="yes-btn" onclick="confirmDelete()">Yes</button>
+        <button class="no-btn" onclick="closeDeleteModal()">No</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ERROR MODAL -->
+<div id="errorModal" class="modal">
+  <div class="modal-content error-box">
+
+    <h2 class="error-title">Invalid Amount</h2>
+
+    <p class="error-text">
+      Please enter a valid amount.
+    </p>
+
+    <button class="ok-btn" onclick="closeErrorModal()">OK</button>
+
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<script src="{{ url_for('static', filename='js/goals.js') }}"></script>
+
+</body>
+</html>
