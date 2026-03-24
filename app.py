@@ -153,6 +153,11 @@ def admin_dashboard():
         "SELECT COUNT(*) FROM goals"
     ).fetchone()[0]
 
+    # 🔥 REQUIRED FOR PIE CHART
+    admin_count = conn.execute(
+        "SELECT COUNT(*) FROM users WHERE role='admin'"
+    ).fetchone()[0]
+
     conn.close()
 
     return render_template(
@@ -160,38 +165,50 @@ def admin_dashboard():
         users=users,
         total_income=total_income,
         total_expense=total_expense,
-        total_goals=total_goals
+        total_goals=total_goals,
+        admin_count=admin_count
     )
+    
+#=============ADD USER================
 
-@app.route("/delete_user/<int:user_id>")
+@app.route("/add_user", methods=["POST"])
 @admin_required
-def delete_user(user_id):
+def add_user():
 
-    # ❌ Prevent admin from deleting themselves
-    if user_id == session["user_id"]:
-        return "❌ You cannot delete yourself!"
+    name = request.form.get("name")
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    if not name or not email or not password:
+        flash("All fields are required", "danger")
+        return redirect("/admin")
 
     conn = get_db()
 
-    # 🔥 Delete related data first
-    conn.execute("DELETE FROM income WHERE user_id=?", (user_id,))
-    conn.execute("DELETE FROM expenses WHERE user_id=?", (user_id,))
-    conn.execute("DELETE FROM goals WHERE user_id=?", (user_id,))
+    hashed_password = generate_password_hash(password)
 
-    # 👤 Delete user
-    conn.execute("DELETE FROM users WHERE id=?", (user_id,))
+    try:
+        conn.execute("""
+            INSERT INTO users (name, email, password, role)
+            VALUES (?, ?, ?, ?)
+        """, (name, email, hashed_password, "user"))
 
-    conn.commit()
+        conn.commit()
+        flash("User added successfully", "success")
+
+    except sqlite3.IntegrityError:
+        flash("Email already exists", "danger")
+
     conn.close()
 
-    return redirect("/admin")
+    return redirect("/admin")    
 
 # ================= TOGGLE ADMIN =================
 @app.route("/toggle-admin/<int:user_id>")
 @admin_required
 def toggle_admin(user_id):
 
-    # ❌ Prevent self role change
+    # ❌ prevent self edit
     if user_id == session["user_id"]:
         flash("You cannot change your own role!", "warning")
         return redirect("/admin")
@@ -207,7 +224,6 @@ def toggle_admin(user_id):
         conn.close()
         return redirect("/admin")
 
-    # 🔄 TOGGLE ROLE
     new_role = "admin" if user["role"] != "admin" else "user"
 
     conn.execute(
@@ -218,7 +234,34 @@ def toggle_admin(user_id):
     conn.commit()
     conn.close()
 
-    flash(f"User role updated to {new_role}", "success")
+    flash(f"Role updated to {new_role}", "success")
+
+    return redirect("/admin")
+
+#=====================DELETE USER==============
+@app.route("/delete_user/<int:user_id>")
+@admin_required
+def delete_user(user_id):
+
+    # ❌ prevent self delete
+    if user_id == session["user_id"]:
+        flash("You cannot delete yourself!", "danger")
+        return redirect("/admin")
+
+    conn = get_db()
+
+    # delete related data
+    conn.execute("DELETE FROM income WHERE user_id=?", (user_id,))
+    conn.execute("DELETE FROM expenses WHERE user_id=?", (user_id,))
+    conn.execute("DELETE FROM goals WHERE user_id=?", (user_id,))
+
+    conn.execute("DELETE FROM users WHERE id=?", (user_id,))
+
+    conn.commit()
+    conn.close()
+
+    flash("User deleted successfully", "success")
+
     return redirect("/admin")
 
 # ================= GLOBAL USER (🔥 BEST FIX) =================
@@ -412,7 +455,7 @@ def pretty_date(value):
         return value
 
 # ---------------- LOGIN ----------------
-@app.route("/", methods=["GET", "POST"])
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -1927,16 +1970,18 @@ def smart_advisor():
     )
 
 
-# ================= HOME PAGE =================
-@app.route("/")
-def index():
-    return render_template("home.html")
-
-
 @app.route("/home")
 def home():
     return render_template("home.html")
+#===================WELCOME PAGE==============
+@app.route("/welcome")
+def welcome():
+    return render_template("welcome.html")
 
+# ================= HOME PAGE =================
+@app.route("/")
+def index():
+    return render_template("welcome.html")
 
 print(app.url_map)
 
