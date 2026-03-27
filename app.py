@@ -239,27 +239,15 @@ def dashboard():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    conn = get_db()
-    user = conn.execute(
-        "SELECT * FROM users WHERE id = ?",
-        (session["user_id"],)
-    ).fetchone()
-    conn.close()
+    return render_template("dashboard.html")
 
-    return render_template("dashboard.html", user=user)
 
 @app.route("/profile")
 def profile():
     if "user_id" not in session:
         return redirect(url_for("login"))
 
-    conn = get_db()
-    user = conn.execute(
-        "SELECT * FROM users WHERE id = ?",
-        (session["user_id"],)
-    ).fetchone()
-    conn.close()
-    return render_template("dashboard.html", user=user)
+    return render_template("profile.html")
 
 
 
@@ -637,6 +625,18 @@ def logout():
 
 
 # ---------------- RUN ----------------
+@app.context_processor
+def inject_user():
+    if "user_id" in session:
+        conn = get_db()
+        user = conn.execute(
+            "SELECT * FROM users WHERE id=?",
+            (session["user_id"],)
+        ).fetchone()
+        conn.close()
+        return dict(user=user)
+    return dict(user=None)
+
 @app.route("/income")
 def income_summary():
     if "user_id" not in session:
@@ -656,14 +656,13 @@ def income_summary():
 
     conn.close()
 
-    # ✅ ADD THIS LINE
     monthly_income = get_monthly_income(session["user_id"])
 
     return render_template(
         "income_summary.html",
         incomes=incomes,
         total_income=total,
-        monthly_income=monthly_income   # ✅ PASS TO TEMPLATE
+        monthly_income=monthly_income
     )
 
 @app.route("/income/list")

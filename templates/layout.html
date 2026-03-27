@@ -6,65 +6,78 @@
 </head>
 
 <body>
+
 <div class="sidebar">
 
+    <!-- 🔥 LOGO -->
     <div class="logo">
         💰 <span>FinSmart</span>
     </div>
-<ul class="sidebar-menu">
 
-  <li class="{% if request.endpoint == 'dashboard' %}active{% endif %}">
-    <a href="{{ url_for('dashboard') }}">📊 Dashboard</a>
-  </li>
+    <!-- 🔥 PROFILE SECTION -->
+    <div class="sidebar-profile">
+        {% if user and user.profile_pic %}
+            <img src="{{ url_for('static', filename='uploads/' + user.profile_pic) }}" class="sidebar-avatar">
+        {% else %}
+            <img src="{{ url_for('static', filename='images/default.png') }}" class="sidebar-avatar">
+        {% endif %}
 
-  <li class="{% if request.endpoint == 'edit_profile' %}active{% endif %}">
-    <a href="{{ url_for('edit_profile') }}">👤 Profile</a>
-  </li>
+        <!-- ✅ USER NAME -->
+        <div class="sidebar-name">
+            {{ user.name if user else "User" }}
+        </div>
+    </div>
 
-  <!-- ✅ INCOME (covers all income pages) -->
-  <li class="{% if 'income' in request.endpoint %}active{% endif %}">
-    <a href="{{ url_for('income_summary') }}">💰 Income</a>
-  </li>
+    <!-- 🔥 MENU -->
+    <ul class="sidebar-menu">
 
-  <!-- ✅ EXPENSE -->
-  <li class="{% if 'expense' in request.endpoint %}active{% endif %}">
-    <a href="{{ url_for('expense_management') }}">💸 Expenses</a>
-  </li>
+        <li class="{% if request.endpoint == 'dashboard' %}active{% endif %}">
+            <a href="{{ url_for('dashboard') }}">📊 Dashboard</a>
+        </li>
 
-  <!-- ✅ SAVINGS -->
-  <li class="{% if request.endpoint == 'savings' %}active{% endif %}">
-    <a href="{{ url_for('savings') }}">🏦 Savings</a>
-  </li>
+        <li class="{% if request.endpoint == 'edit_profile' %}active{% endif %}">
+            <a href="{{ url_for('edit_profile') }}">👤 Profile</a>
+        </li>
 
-  <!-- ✅ ANALYTICS -->
-  <li class="{% if request.endpoint == 'financial_analytics' %}active{% endif %}">
-    <a href="{{ url_for('financial_analytics') }}">📈 Analytics</a>
-  </li>
+        <li class="{% if 'income' in request.endpoint %}active{% endif %}">
+            <a href="{{ url_for('income_summary') }}">💰 Income</a>
+        </li>
 
-  <!-- ✅ GOALS -->
-  <li class="{% if 'goals' in request.endpoint %}active{% endif %}">
-  <a href="{{ url_for('goals_page') }}">🎯 Goals</a>
-</li>
+        <li class="{% if 'expense' in request.endpoint %}active{% endif %}">
+            <a href="{{ url_for('expense_management') }}">💸 Expenses</a>
+        </li>
 
-  <li class="{% if request.endpoint == 'change_password' %}active{% endif %}">
-    <a href="{{ url_for('change_password') }}">🔒 Change Password</a>
-  </li>
-<li class="{% if request.endpoint == 'logout' %}active{% endif %}">
-    <a href="{{ url_for('logout') }}">🚪Logout</a>
-</li>
+        <li class="{% if request.endpoint == 'savings' %}active{% endif %}">
+            <a href="{{ url_for('savings') }}">🏦 Savings</a>
+        </li>
 
-</ul>
+        <li class="{% if request.endpoint == 'financial_analytics' %}active{% endif %}">
+            <a href="{{ url_for('financial_analytics') }}">📈 Analytics</a>
+        </li>
+
+        <li class="{% if 'goals' in request.endpoint %}active{% endif %}">
+            <a href="{{ url_for('goals_page') }}">🎯 Goals</a>
+        </li>
+
+        <li class="{% if request.endpoint == 'change_password' %}active{% endif %}">
+            <a href="{{ url_for('change_password') }}">🔒 Change Password</a>
+        </li>
+
+        <li class="{% if request.endpoint == 'logout' %}active{% endif %}">
+            <a href="{{ url_for('logout') }}">🚪 Logout</a>
+        </li>
+
+    </ul>
 
 </div>
 
-    <!-- 🔥 RIGHT SIDE CONTENT -->
-    <div class="main-content">
-        {% block content %}{% endblock %}
-    </div>
-
+<!-- 🔥 MAIN CONTENT -->
+<div class="main-content">
+    {% block content %}{% endblock %}
 </div>
 
 </body>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -73,14 +86,14 @@ document.addEventListener("DOMContentLoaded", function () {
   if (toasts.length > 0) {
     setTimeout(() => {
       toasts.forEach(t => {
-        t.style.opacity = "0";  // fade out
+        t.style.opacity = "0";
         t.style.transform = "translateY(-10px)";
-
-        setTimeout(() => t.remove(), 500); // remove after fade
+        setTimeout(() => t.remove(), 500);
       });
     }, 3000);
   }
 
 });
 </script>
+
 </html>
