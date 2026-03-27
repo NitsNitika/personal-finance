@@ -1,57 +1,69 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>User Profile</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
+{% extends "layout.html" %}
 
-<body>
-<div class="auth-container">
-  <div class="auth-card profile-card">
+{% block content %}
 
-    <h2 class="profile-title">User Profile</h2>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
-    <div class="profile-avatar">
+<div class="page-container">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <h1>User Profile</h1>
+  </div>
+
+  <!-- PROFILE CARD -->
+  <div class="profile-card-new">
+
+    <div class="profile-top">
       {% if user['profile_pic'] %}
         <img src="{{ url_for('static', filename='uploads/' + user['profile_pic']) }}" class="avatar-img">
       {% else %}
-        <div class="avatar-circle"><span>Profile</span></div>
+        <div class="avatar-circle">Profile</div>
       {% endif %}
+
+      <h2>{{ user['name'] }}</h2>
+      <p>{{ user['email'] }}</p>
     </div>
 
-    <h3 class="profile-name">{{ user['name'] }}</h3>
-    <p class="profile-email">{{ user['email'] }}</p>
+    <!-- ACTION BUTTONS -->
+    <div class="profile-grid">
 
-   <div class="profile-actions">
-  <a href="{{ url_for('edit_profile') }}" class="btn-outline">Edit Profile ✏️</a>
-  <a href="{{ url_for('change_password') }}" class="btn-primary">Change Password 🔒</a>
+      <a href="{{ url_for('edit_profile') }}" class="card-btn primary">
+        Edit Profile ✏️
+      </a>
 
-  <a href="{{ url_for('income_summary') }}" class="profile-box income-box">
-    Income Management 💰
-  </a>
+      <a href="{{ url_for('change_password') }}" class="card-btn outline">
+        Change Password 🔒
+      </a>
 
-  <a href="{{ url_for('expense_management') }}" class="profile-box expense-box">
-    Expense Management 💸
-  </a>
+      <a href="{{ url_for('income_summary') }}" class="card-btn">
+        Income 💰
+      </a>
 
-  <a href="{{ url_for('savings') }}" class="profile-btn savings-btn">
-    Savings 💰
-  </a>
-    <!-- 🔥 NEW FINANCIAL DASHBOARD BUTTON -->
- <a href="{{ url_for('financial_analytics') }}" class="profile-box dashboard-box">
-  Financial Analytics 📊
-</a>
-<a href="{{ url_for('goals_page') }}" class="profile-box dashboard-box">
-    Goals 🎯
-</a>
+      <a href="{{ url_for('expense_management') }}" class="card-btn">
+        Expenses 💸
+      </a>
 
-  <a href="{{ url_for('logout') }}" class="btn-danger">
-    Logout 🚪
-  </a>
-</div>
+      <a href="{{ url_for('savings') }}" class="card-btn">
+        Savings 💰
+      </a>
 
+      <a href="{{ url_for('financial_analytics') }}" class="card-btn">
+        Analytics 📊
+      </a>
+
+      <a href="{{ url_for('goals_page') }}" class="card-btn">
+        Goals 🎯
+      </a>
+
+      <a href="{{ url_for('logout') }}" class="card-btn danger">
+        Logout 🚪
+      </a>
+
+    </div>
 
   </div>
+
 </div>
-</body>
-</html>
+
+{% endblock %}

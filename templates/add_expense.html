@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Add Expense</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/add_expense.css') }}">
-</head>
-<body>
+{% extends "layout.html" %}
+
+{% block content %}
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/add_expense.css') }}">
 
 <div class="add-page">
 
@@ -30,12 +28,7 @@
 
         <div class="amount-wrapper">
           <div class="currency">₹</div>
-          <input
-            type="number"
-            name="amount"
-            placeholder="Enter amount"
-            required
-          >
+          <input type="number" name="amount" placeholder="Enter amount" required>
         </div>
       </div>
 
@@ -55,14 +48,10 @@
         </select>
       </div>
 
-      <!-- Custom Category (hidden by default) -->
+      <!-- Custom Category -->
       <div class="form-group" id="customCategoryGroup" style="display:none;">
-        <input
-          type="text"
-          name="custom_category"
-          id="customCategory"
-          placeholder="Enter other category"
-        >
+        <input type="text" name="custom_category" id="customCategory"
+               placeholder="Enter other category">
       </div>
 
       <!-- Date -->
@@ -80,11 +69,7 @@
           Note (optional)
         </label>
 
-        <input
-          type="text"
-          name="note"
-          placeholder="Lunch with friends..."
-        >
+        <input type="text" name="note" placeholder="Lunch with friends...">
       </div>
 
       <!-- Save -->
@@ -97,23 +82,21 @@
 
 </div>
 
-<!-- Script -->
 <script>
-  const categorySelect = document.getElementById("categorySelect");
-  const customGroup = document.getElementById("customCategoryGroup");
-  const customInput = document.getElementById("customCategory");
+const categorySelect = document.getElementById("categorySelect");
+const customGroup = document.getElementById("customCategoryGroup");
+const customInput = document.getElementById("customCategory");
 
-  categorySelect.addEventListener("change", function () {
-    if (this.value === "Other") {
-      customGroup.style.display = "block";
-      customInput.required = true;
-    } else {
-      customGroup.style.display = "none";
-      customInput.value = "";
-      customInput.required = false;
-    }
-  });
+categorySelect.addEventListener("change", function () {
+  if (this.value === "Other") {
+    customGroup.style.display = "block";
+    customInput.required = true;
+  } else {
+    customGroup.style.display = "none";
+    customInput.value = "";
+    customInput.required = false;
+  }
+});
 </script>
 
-</body>
-</html>
+{% endblock %}

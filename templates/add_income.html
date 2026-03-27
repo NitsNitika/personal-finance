@@ -1,13 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add Income</title>
+{% extends "layout.html" %}
 
-    <!-- SAME CSS AS MANAGE INCOME -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/add_income.css') }}">
-</head>
-<body>
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/add_income.css') }}">
+
+<!-- ✅ TOAST -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="toast-container">
+  {% for category, message in messages %}
+    <div class="toast {{ category }}">
+      {{ message }}
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
 
 <div class="page-wrapper">
   <div class="main-card">
@@ -24,67 +32,55 @@
         <p>Record a new income entry</p>
       </div>
 
-      <a href="/income" class="back-btn">Back</a>
+      <a href="{{ url_for('income_summary') }}" class="back-btn">Back</a>
     </div>
 
-    <!-- INNER CARD (same as Income Records card) -->
+    <!-- INNER CARD -->
     <div class="income-card">
 
       <h2>Income Details</h2>
       <p class="hint">Salary, Freelancing, Business, Other Source</p>
 
-    <form method="POST" action="{{ url_for('add_income') }}">
-
+      <form method="POST" action="{{ url_for('add_income') }}">
 
         <!-- Row 1 -->
-        <!-- Row 1 -->
-<div class="form-row">
+        <div class="form-row">
 
-  <!-- Income Source -->
-  <div class="form-group">
-    <label>Income Source</label>
+          <!-- Income Source -->
+          <div class="form-group">
+            <label>Income Source</label>
 
-   <select
-  class="form-select income-select"
-  id="incomeSource"
-  name="income_source"
-  onchange="handleIncomeSourceChange()"
-  required
->
-  <option value="">Select income source</option>
-  <option value="Salary">Salary</option>
-  <option value="Freelancing">Freelancing</option>
-  <option value="Business">Business</option>
-  <option value="Other">Other</option>
-</select>
+            <select
+              class="form-select income-select"
+              id="incomeSource"
+              name="income_source"
+              required
+            >
+              <option value="">Select income source</option>
+              <option value="Salary">Salary</option>
+              <option value="Freelancing">Freelancing</option>
+              <option value="Business">Business</option>
+              <option value="Other">Other</option>
+            </select>
 
+            <!-- Other -->
+            <div id="otherIncomeWrapper" class="other-income-wrapper">
+              <input
+                type="text"
+                class="form-input"
+                name="other_income_source"
+                placeholder="Enter other income source"
+              />
+            </div>
+          </div>
 
-    <!-- Other Income Source -->
-   <div id="otherIncomeWrapper" class="other-income-wrapper">
-  <input
-    type="text"
-    class="form-input other-income-input"
-    name="other_income_source"
-    placeholder="Enter other income source"
-  />
-</div>
+          <!-- Amount -->
+          <div class="form-group">
+            <label>Amount (₹)</label>
+            <input type="number" name="amount" required>
+          </div>
 
-
-  </div>
-
-  <!-- Amount -->
-  <div class="form-group">
-    <label>Amount (₹)</label>
-    <input
-      type="number"
-      name="amount"
-      placeholder="Enter amount"
-      required
-    >
-  </div>
-
-</div>
-
+        </div>
 
         <!-- Date -->
         <div class="form-group">
@@ -94,11 +90,8 @@
 
         <!-- Description -->
         <div class="form-group">
-          <label>Description (optional)</label>
-          <textarea
-            name="description"
-            placeholder="Notes about this income"
-          ></textarea>
+          <label>Description</label>
+          <textarea name="description"></textarea>
         </div>
 
         <!-- Submit -->
@@ -109,14 +102,17 @@
       </form>
 
     </div>
-
   </div>
 </div>
-<script>
-  function handleIncomeSourceChange() {
-    const select = document.getElementById("incomeSource");
-    const otherWrapper = document.getElementById("otherIncomeWrapper");
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  // OTHER INPUT
+  const select = document.getElementById("incomeSource");
+  const otherWrapper = document.getElementById("otherIncomeWrapper");
+
+  function toggleOther() {
     if (select.value === "Other") {
       otherWrapper.style.display = "block";
     } else {
@@ -124,13 +120,18 @@
     }
   }
 
-  // Hide on page load (important for refresh / back navigation)
-  document.addEventListener("DOMContentLoaded", function () {
-    handleIncomeSourceChange();
-  });
+  select.addEventListener("change", toggleOther);
+  toggleOther();
+
+  // ✅ TOAST FIX (THIS IS THE REAL FIX)
+  setTimeout(() => {
+    document.querySelectorAll('.toast').forEach(t => {
+      t.classList.add("hide");   // fade out
+      setTimeout(() => t.remove(), 500); // remove after fade
+    });
+  }, 3000);
+
+});
 </script>
 
-
-
-</body>
-</html>
+{% endblock %}

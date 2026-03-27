@@ -679,7 +679,6 @@ def manage_income():
     conn.close()
 
     return render_template("manage_income.html", incomes=incomes)
-from datetime import datetime
 
 @app.route("/income/edit/<int:id>", methods=["GET", "POST"])
 def edit_income(id):
@@ -699,10 +698,7 @@ def edit_income(id):
     if request.method == "POST":
         source = request.form["source"]
         amount = float(request.form["amount"])
-
-        raw_date = request.form["date"]      # 👈 FROM FORM (DD/MM/YYYY)
-        date = ui_to_db_date(raw_date)        # 👈 CONVERT TO YYYY-MM-DD
-
+        date = request.form["date"]   # ✅ FIXED
         description = request.form.get("description")
 
         conn.execute("""
@@ -721,6 +717,7 @@ def edit_income(id):
     return render_template("edit_income.html", income=income)
 
 
+
 @app.route("/income/delete-list")
 def delete_income_list():
     if "user_id" not in session:
@@ -735,7 +732,6 @@ def delete_income_list():
 
     return render_template("delete_income.html", incomes=incomes)
 
-
 @app.route("/income/delete/<int:id>")
 def delete_income(id):
     if "user_id" not in session:
@@ -748,8 +744,10 @@ def delete_income(id):
     )
     conn.commit()
     conn.close()
+
     flash("Income deleted successfully", "danger")
-    return redirect(url_for("delete_income_list"))
+
+    return redirect(url_for("delete_income_list"))   # ✅ FIXED
  
 
 @app.route("/expense-management")
@@ -1080,7 +1078,6 @@ def api_savings(range_type):
         "savings": total_income - total_expense
     }
 # ================= GOALS (FINAL VERSION) =================
-
 import json
 from flask import request, jsonify, render_template
 
@@ -1115,9 +1112,12 @@ def add_goal():
     data = request.json
     goals = load_goals()
 
-    # ✅ VALIDATION
+    # VALIDATION
     if not data.get("title") or not data.get("target"):
         return jsonify({"error": "Missing fields"})
+
+    if float(data.get("target")) <= 0:
+        return jsonify({"error": "Target must be greater than 0"})
 
     new_goal = {
         "id": len(goals) + 1,
@@ -1131,8 +1131,11 @@ def add_goal():
     goals.append(new_goal)
     save_goals(goals)
 
-    return jsonify({"success": True})
-
+    # ✅ IMPORTANT RESPONSE
+    return jsonify({
+        "success": True,
+        "goal": new_goal
+    })
 
 # -------- ADD MONEY --------
 @app.route("/update_goal/<int:id>", methods=["POST"])

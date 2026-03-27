@@ -1,14 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Expense Management</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/expense.css') }}">
-</head>
+{% extends "layout.html" %}
 
-<body>
+{% block content %}
 
-<!-- ================= TOAST MESSAGES ================= -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/expense.css') }}">
+
+<!-- ================= TOAST ================= -->
 {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
     <div class="toast-container">
@@ -31,7 +27,9 @@
       </p>
     </div>
 
-    <a href="{{ url_for('dashboard') }}" class="btn-back">Back to Dashboard</a>
+    <a href="{{ url_for('dashboard') }}" class="btn-back">
+      Back to Dashboard
+    </a>
   </div>
 
   <!-- ================= CARD ================= -->
@@ -40,7 +38,6 @@
     <!-- ================= ACTION BAR ================= -->
     <form method="GET" action="{{ url_for('expense_management') }}" class="action-bar">
 
-      <!-- ✅ FIXED: BUTTON instead of <a> -->
       <button
         type="button"
         class="btn-primary add-expense-btn"
@@ -68,7 +65,6 @@
       <input type="date" name="from_date">
       <input type="date" name="to_date">
 
-      <!-- ✅ MUST BE submit -->
       <button type="submit" class="btn-primary filter-btn">
         Filter
       </button>
@@ -131,7 +127,7 @@
   </div>
 </div>
 
-<!-- ================= JAVASCRIPT ================= -->
+<!-- ================= JS ================= -->
 <script>
 const categorySelect = document.getElementById("categorySelect");
 const customCategory = document.getElementById("customCategory");
@@ -155,7 +151,11 @@ function openDeleteModal(url) {
 function closeDeleteModal() {
   document.getElementById("deleteModal").style.display = "none";
 }
+
+// ✅ AUTO HIDE TOAST
+setTimeout(() => {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+}, 3000);
 </script>
 
-</body>
-</html>
+{% endblock %}

@@ -6,17 +6,17 @@
 body {
   background: #f4f7fc;
   margin: 0;
-  padding: 40px;
-  font-size: 16px; 
+  padding: 0;   /* 🔥 FIXED */
+  font-size: 16px;
 }
 
 /* Layout */
 .page-wrapper {
   max-width: 1100px;
   margin: auto;
-   font-size: 36px;
+  padding: 20px 30px;
+  /* REMOVE font-size: 36px */
 }
-
 /* Header */
 .page-header {
   display: flex;

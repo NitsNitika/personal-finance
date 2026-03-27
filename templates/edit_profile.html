@@ -1,52 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Edit Profile</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
+{% extends "layout.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
 <div class="auth-container">
+
     <div class="auth-card">
 
         <h2 class="form-title">Edit Profile</h2>
 
         <form method="POST" enctype="multipart/form-data" class="edit-profile-form">
 
-    <input
-        type="text"
-        name="name"
-        value="{{ user['name'] }}"
-        class="input-field"
-        required
-    >
+            <input
+                type="text"
+                name="name"
+                value="{{ user['name'] }}"
+                class="input-field"
+                required
+            >
 
-    <input
-        type="email"
-        name="email"
-        value="{{ user['email'] }}"
-        class="input-field"
-        required
-    >
+            <input
+                type="email"
+                name="email"
+                value="{{ user['email'] }}"
+                class="input-field"
+                required
+            >
 
-    <input
-        type="file"
-        name="profile_pic"
-        class="file-input"
-        accept="image/*"
-    >
+            <input
+                type="file"
+                name="profile_pic"
+                class="file-input"
+                accept="image/*"
+            >
 
-    <button type="submit" class="btn-primary">
-        Save Changes
-    </button>
+            <button type="submit" class="btn-primary">
+                Save Changes
+            </button>
 
-</form>
+        </form>
 
-<a href="{{ url_for('dashboard') }}" class="back-link">
-    Back to Profile
-</a>
+        <a href="{{ url_for('dashboard') }}" class="back-link">
+             Back to Profile
+        </a>
+
+    </div>
+
 </div>
 
-</body>
-</html>
+{% endblock %}

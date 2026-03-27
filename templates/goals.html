@@ -1,13 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Goals</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/goals.css') }}">
-</head>
+{% extends "layout.html" %}
 
-<body>
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/goals.css') }}">
 
 <div class="page">
+
+  <!-- HEADER BAR -->
+  <div class="top-bar">
+    <button class="back-btn" onclick="window.location.href='{{ url_for('dashboard') }}'">
+      Back to Dashboard
+    </button>
+  </div>
+
   <div class="main-card">
 
     <!-- HEADER -->
@@ -16,95 +21,94 @@
         <h1>Goals 🎯</h1>
         <p>Track your progress towards Financial Freedom</p>
       </div>
-
       <button class="create-btn" onclick="openModal()">Create Goal</button>
     </div>
 
     <!-- STATS -->
     <div class="stats">
-
       <div class="card savings">
         <p>Total Savings</p>
-        <h2>₹{{ total }}</h2>
+        <h2 id="totalSavings">₹{{ total }}</h2>
       </div>
 
       <div class="card goals">
         <p>Goals Active</p>
         <h2>{{ active }}</h2>
       </div>
-
     </div>
 
     <!-- GOALS LIST -->
-    {% if goals|length == 0 %}
-        <div class="no-goals">
-            No goals yet 🚀
+    <div id="goalsContainer" style="margin-top: 20px;">
+
+      {% if goals|length == 0 %}
+        <div class="no-goals" id="emptyState">
+          No goals yet 🚀
         </div>
-    {% else %}
+      {% endif %}
 
-        {% for goal in goals %}   <!-- ✅ FIXED (NO MORE g ERROR) -->
+      {% for goal in goals %}
 
-        <div class="goal-card {{ goal.priority | lower }}">
+      <!-- ✅ FIXED MAIN WRAPPER -->
+      <div id="goal-{{ goal.id }}" class="goal-card {{ goal.priority | lower }}">
 
-            <!-- HEADER -->
-            <div class="goal-header">
-                <h3>{{ goal.title }}</h3>
-
-                <span>
-                    {{ [((goal.saved / goal.target) * 100), 100] | min | round(0) }}%
-                </span>
-            </div>
-
-            <!-- PROGRESS -->
-            <div class="progress-bar">
-                <div class="progress {{ goal.priority | lower }}"
-                     style="width: {{ [((goal.saved / goal.target) * 100), 100] | min }}%">
-                </div>
-            </div>
-
-            <!-- FOOTER -->
-            <div class="goal-footer">
-                <p>
-                    ₹<span id="saved-{{ goal.id }}">{{ goal.saved }}</span> /
-                    ₹<span id="target-{{ goal.id }}">{{ goal.target }}</span>
-                </p>
-
-                <span class="badge {{ goal.priority | lower }}">
-                    {{ goal.priority }}
-                </span>
-            </div>
-
-            <!-- ACTIONS -->
-            <div class="goal-actions">
-
-                <input type="number"
-                       id="amount-{{ goal.id }}"
-                       placeholder="₹ Add money"
-                       min="1"
-                       {% if goal.saved >= goal.target %}disabled{% endif %}>
-
-                <button onclick="addMoney({{ goal.id }})"
-                        {% if goal.saved >= goal.target %}disabled{% endif %}>
-                    Add
-                </button>
-
-                <button onclick="deleteGoal({{ goal.id }})" class="delete">
-                    Delete
-                </button>
-            </div>
-
-            <!-- COMPLETED -->
-            {% if goal.saved >= goal.target %}
-                <div class="goal-complete">
-                    🎉 Goal Achieved!
-                </div>
-            {% endif %}
-
+        <!-- HEADER -->
+        <div class="goal-header">
+          <h3>{{ goal.title }}</h3>
+          <span>
+            {{ [((goal.saved / goal.target * 100) if goal.target > 0 else 0), 100] | min | round(0) }}%
+          </span>
         </div>
 
-        {% endfor %}
+        <!-- PROGRESS -->
+        <div class="progress-bar">
+          <div class="progress {{ goal.priority | lower }}"
+               style="width: {{ [((goal.saved / goal.target * 100) if goal.target > 0 else 0), 100] | min }}%">
+          </div>
+        </div>
 
-    {% endif %}
+        <!-- FOOTER -->
+        <div class="goal-footer">
+          <p>
+            ₹<span id="saved-{{ goal.id }}">{{ goal.saved }}</span> /
+            ₹<span id="target-{{ goal.id }}">{{ goal.target }}</span>
+          </p>
+
+          <span class="badge {{ goal.priority | lower }}">
+            {{ goal.priority }}
+          </span>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="goal-actions">
+          <input type="text"
+                 id="amount-{{ goal.id }}"
+                 inputmode="numeric"
+                 pattern="[0-9]*"
+                 placeholder="₹ Add money"
+                 {% if goal.saved >= goal.target %}disabled{% endif %}>
+
+          <button onclick="addMoney({{ goal.id }})"
+                  {% if goal.saved >= goal.target %}disabled{% endif %}>
+            Add
+          </button>
+
+          <button onclick="deleteGoal({{ goal.id }})" class="delete">
+            Delete
+          </button>
+        </div>
+
+        <!-- COMPLETED -->
+        {% if goal.saved >= goal.target %}
+          <div class="goal-complete">
+            🎉 Goal Achieved!
+          </div>
+        {% endif %}
+
+      </div>
+
+      {% endfor %}
+
+    </div>
 
   </div>
 </div>
@@ -130,7 +134,9 @@
       <option>Low</option>
     </select>
 
-    <button class="save-btn" onclick="createGoal()">Save Goal</button>
+    <button type="button" class="save-btn" id="saveGoalBtn">
+      Save Goal
+    </button>
 
   </div>
 </div>
@@ -146,8 +152,8 @@
     </p>
 
     <div class="delete-actions">
-        <button class="yes-btn" onclick="confirmDelete()">Yes</button>
-        <button class="no-btn" onclick="closeDeleteModal()">No</button>
+      <button class="yes-btn" onclick="confirmDelete()">Yes</button>
+      <button class="no-btn" onclick="closeDeleteModal()">No</button>
     </div>
 
   </div>
@@ -168,10 +174,25 @@
   </div>
 </div>
 
+<!-- SUCCESS MODAL -->
+<div id="successModal" class="modal">
+  <div class="modal-content error-box">
+
+    <h2 class="error-title" style="color:green;">Success</h2>
+
+    <p class="error-text" id="successText">
+      Goal created successfully!
+    </p>
+
+    <button class="ok-btn" onclick="closeSuccessModal()">OK</button>
+
+  </div>
+</div>
+
 <!-- TOAST -->
 <div id="toast" class="toast"></div>
 
+<!-- JS -->
 <script src="{{ url_for('static', filename='js/goals.js') }}"></script>
 
-</body>
-</html>
+{% endblock %}

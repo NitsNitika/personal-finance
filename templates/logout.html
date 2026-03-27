@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Confirm Logout</title>
+{% extends "layout.html" %}
 
-    <!-- AUTH CSS ONLY -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
-</head>
+{% block content %}
 
-<body class="auth-page">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
 
 <div class="auth-container">
     <div class="auth-card">
@@ -31,5 +26,4 @@
     </div>
 </div>
 
-</body>
-</html>
+{% endblock %}

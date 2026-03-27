@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Edit Income</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/edit_income.css') }}">
-</head>
-<body>
+{% extends "layout.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/edit_income.css') }}">
 
 <div class="page-wrapper">
   <div class="edit-card">
@@ -42,20 +39,18 @@
         >
       </div>
 
-      <!-- Date (WORKING CALENDAR) -->
+      <!-- Date -->
       <div class="form-group">
-  <label>Date</label>
-  <div class="date-wrapper">
-    <input
-      type="date"
-      name="date"
-      value="{{ income.date }}"
-      required
-    >
-    <span class="calendar-icon"></span>
-  </div>
-</div>
-
+        <label>Date</label>
+        <div class="date-wrapper">
+          <input
+            type="date"
+            name="date"
+            value="{{ income.date }}"
+            required
+          >
+        </div>
+      </div>
 
       <!-- Description -->
       <div class="form-group">
@@ -72,11 +67,10 @@
 
     <!-- Back -->
     <a href="{{ url_for('manage_income') }}" class="back-link">
-      ← Back to Manage Income
+      Back to Manage Income
     </a>
 
   </div>
 </div>
 
-</body>
-</html>
+{% endblock %}

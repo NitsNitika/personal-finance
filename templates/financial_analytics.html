@@ -1,27 +1,26 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Financial Analytics</title>
+{% extends "layout.html" %}
 
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% block content %}
 
-  <!-- Global CSS -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- Analytics CSS -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/financial_analytics.css') }}">
-</head>
-
-<body>
-    <div class="top-bar">
-  <a href="{{ url_for('profile') }}" class="back-btn">
-    Back to Dashboard
-  </a>
-</div>
-
+<!-- Analytics CSS -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/financial_analytics.css') }}">
 
 <div class="analytics-container">
+
+  <!-- HEADER -->
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <div>
+      <p class="breadcrumb">Dashboard / Analytics</p>
+      <h1>Financial Analytics</h1>
+    </div>
+
+    <a href="{{ url_for('dashboard') }}" class="back-btn">
+      Back to Dashboard
+    </a>
+  </div>
 
   <!-- TOP ROW -->
   <div class="analytics-grid">
@@ -106,6 +105,4 @@ new Chart(document.getElementById("savingsChart"), {
 });
 </script>
 
-
-</body>
-</html>
+{% endblock %}

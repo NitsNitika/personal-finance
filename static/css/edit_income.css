@@ -137,3 +137,29 @@ body {
 .back-link:hover {
   background: #e0e7ff;
 }
+/* TOAST CONTAINER */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+/* TOAST */
+.toast {
+  background: #16a34a;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-weight: 500;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+/* FADE OUT */
+.toast.hide {
+  opacity: 0;
+}

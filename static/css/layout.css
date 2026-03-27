@@ -1,0 +1,102 @@
+/* ================= RESET ================= */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #eef1f7;
+}
+
+/* ================= MAIN APP ================= */
+.app {
+    display: flex;
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    background: #0f172a;
+    color: white;
+
+    padding: 30px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* LOGO */
+.logo {
+    font-size: 26px;
+    font-weight: bold;
+    margin-bottom: 40px;
+}
+
+/* ✅ REMOVE BULLETS */
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* MENU ITEMS */
+.sidebar-menu li {
+    margin-bottom: 10px;
+}
+
+/* LINKS */
+.sidebar-menu li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 14px 16px;
+    border-radius: 12px;
+
+    font-size: 16px;
+    color: #cbd5e1;
+    text-decoration: none;
+
+    transition: all 0.2s ease;
+}
+
+/* ACTIVE LINK */
+.sidebar-menu li.active a {
+    background: linear-gradient(135deg, #4f7cff, #3b5bdb);
+    color: white;
+}
+
+/* HOVER */
+.sidebar-menu li a:hover {
+    background: #1e293b;
+    color: white;
+}
+
+/* ================= RIGHT CONTENT ================= */
+.main-content {
+    margin-left: 260px;
+    padding: 30px 40px;
+    width: calc(100% - 260px);
+    min-height: 100vh;
+    background: #eef1f7;
+}
+
+/* PAGE TITLE */
+.main-content h1 {
+    font-size: 30px;
+    margin-bottom: 20px;
+    color: #111;
+}
+.main-content .auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.auth-card {
+    width: 400px;
+    margin: auto;
+}

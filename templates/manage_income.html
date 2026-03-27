@@ -1,11 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Manage Income</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/manage_income.css') }}">
-</head>
-<body>
+{% extends "layout.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/manage_income.css') }}">
+
+<!-- TOAST -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="toast-container">
+  {% for category, message in messages %}
+    <div class="toast {{ category }}">
+      {{ message }}
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endwith %}
 
 <div class="page-wrapper">
   <div class="main-card">
@@ -28,7 +38,6 @@
     <div class="income-card">
       <h2>Income Records</h2>
 
-      <!-- TABLE -->
       <table>
         <thead>
           <tr>
@@ -41,10 +50,8 @@
 
         <tbody id="incomeTableBody">
           {% for income in incomes %}
-          <tr class="{% if loop.index > 5 %}hidden-row{% endif %}">
+          <tr class="income-row {% if loop.index > 5 %}hidden-row{% endif %}">
             <td>{{ income.date | pretty_date }}</td>
-
-
             <td>{{ income.source.title() }}</td>
             <td>₹{{ income.amount }}</td>
             <td>
@@ -59,7 +66,6 @@
         </tbody>
       </table>
 
-      <!-- VIEW MORE / LESS -->
       {% if incomes|length > 5 %}
       <div class="view-toggle-wrapper">
         <button id="toggleViewBtn" class="view-toggle-btn">
@@ -72,25 +78,33 @@
   </div>
 </div>
 
-<!-- SCRIPT -->
+<!-- ✅ JS FOR TOGGLE -->
 <script>
+document.addEventListener("DOMContentLoaded", function () {
+
   const toggleBtn = document.getElementById("toggleViewBtn");
   const hiddenRows = document.querySelectorAll(".hidden-row");
 
   let expanded = false;
 
   if (toggleBtn) {
-    toggleBtn.addEventListener("click", () => {
+    toggleBtn.addEventListener("click", function () {
       expanded = !expanded;
 
       hiddenRows.forEach(row => {
         row.style.display = expanded ? "table-row" : "none";
       });
 
-      toggleBtn.textContent = expanded ? "View Less" : "View More";
+      toggleBtn.innerText = expanded ? "View Less" : "View More";
     });
   }
+
+  // Toast auto hide
+  setTimeout(() => {
+    document.querySelectorAll('.toast').forEach(t => t.remove());
+  }, 3000);
+
+});
 </script>
 
-</body>
-</html>
+{% endblock %}
