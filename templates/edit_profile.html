@@ -8,8 +8,30 @@
 
     <div class="auth-card">
 
-        <h2 class="form-title">Edit Profile</h2>
+        <!-- 🔥 HEADER -->
+        <div class="header">
+            <h1 class="brand-line">
+                Welcome back 👋 <span>MoneyMate</span>
+            </h1>
+            <h2 class="page-title">Edit Profile</h2>
+        </div>
 
+        <!-- 🔥 PROFILE IMAGE PREVIEW (SAME AS DASHBOARD) -->
+        <div class="profile-preview">
+            {% if user['profile_pic'] %}
+                <img 
+                    id="profilePreview"
+                    src="{{ url_for('static', filename='uploads/' + user['profile_pic']) }}"
+                    class="preview-img"
+                >
+            {% else %}
+                <div id="profilePreview" class="avatar-circle">
+                    {{ user['name'][0] }}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- 🔥 FORM -->
         <form method="POST" enctype="multipart/form-data" class="edit-profile-form">
 
             <input
@@ -28,9 +50,11 @@
                 required
             >
 
+            <!-- 🔥 FILE INPUT -->
             <input
                 type="file"
                 name="profile_pic"
+                id="profileInput"
                 class="file-input"
                 accept="image/*"
             >
@@ -48,5 +72,35 @@
     </div>
 
 </div>
+
+<!-- 🔥 IMAGE PREVIEW SCRIPT -->
+<script>
+    const input = document.getElementById("profileInput");
+    const preview = document.getElementById("profilePreview");
+
+    input.addEventListener("change", function () {
+        const file = this.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = function () {
+
+                // If preview was avatar circle → replace with img
+                if (preview.tagName !== "IMG") {
+                    const img = document.createElement("img");
+                    img.id = "profilePreview";
+                    img.className = "preview-img";
+                    preview.replaceWith(img);
+                    img.src = reader.result;
+                } else {
+                    preview.src = reader.result;
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
 
 {% endblock %}
