@@ -1171,6 +1171,75 @@ def delete_goal(id):
 
     save_goals(goals)
     return jsonify({"success": True})
+
+
+@app.route("/dashboard-data")
+def dashboard_data():
+
+    # ✅ AUTH CHECK FIRST
+    if "user_id" not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    conn = get_db()
+
+    # ✅ FIXED COLUMN NAME HERE
+    user = conn.execute(
+        "SELECT name, profile_pic FROM users WHERE id = ?",
+        (session["user_id"],)
+    ).fetchone()
+
+    # ================= TOTALS =================
+    income = conn.execute(
+        "SELECT COALESCE(SUM(amount), 0) FROM income WHERE user_id = ?",
+        (session["user_id"],)
+    ).fetchone()[0]
+
+    expenses = conn.execute(
+        "SELECT COALESCE(SUM(amount), 0) FROM expenses WHERE user_id = ?",
+        (session["user_id"],)
+    ).fetchone()[0]
+
+    savings = income - expenses
+
+    # ================= TRANSACTIONS =================
+    transactions = conn.execute("""
+        SELECT 'income' as type, amount, date, source as title FROM income
+        WHERE user_id = ?
+        
+        UNION ALL
+        
+        SELECT 'expense' as type, amount, date, category as title FROM expenses
+        WHERE user_id = ?
+        
+        ORDER BY date DESC
+    """, (session["user_id"], session["user_id"])).fetchall()
+
+    # ================= GOALS =================
+    goals_data = load_goals()
+    goals = []
+
+    for g in goals_data:
+        goals.append({
+            "title": g.get("title"),
+            "target_amount": g.get("target", 0),
+            "saved_amount": g.get("saved", 0)
+        })
+
+    conn.close()
+
+    # ================= RESPONSE =================
+    return jsonify({
+        "income": income,
+        "expenses": expenses,
+        "savings": savings,
+        "transactions": [dict(row) for row in transactions],
+        "goals": goals,
+
+        # ✅ FIXED USER DATA
+        "user_name": user["name"] if user else "User",
+        "user_image": f"/static/uploads/{user['profile_pic']}" if user and user["profile_pic"] else "/static/images/default.png"
+    })
+
 if __name__ == "__main__":
     app.run(debug=True)
   

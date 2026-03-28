@@ -429,6 +429,17 @@ body * {
     color: #2d4bff;
     background: #ffffff;
 }
+.income {
+    background: linear-gradient(135deg, #3ccf7f, #2bb673);
+}
+
+.expense {
+    background: linear-gradient(135deg, #ff5f5f, #ff3d3d);
+}
+
+.savings {
+    background: linear-gradient(135deg, #4da3ff, #2f80ed);
+}
 
 /* Logout */
 .btn-danger {
@@ -883,7 +894,9 @@ a:active {
   box-shadow: 0 8px 20px rgba(91,124,250,0.3);
   z-index: 1000;
 }
-
+.card {
+    height: auto;
+}
 .back-btn:hover {
   background: #4868e0;
 }
@@ -934,17 +947,32 @@ a:active {
 }
 /* ================= PROFILE PAGE (DASHBOARD STYLE) ================= */
 
-.page-container {
-    padding: 20px;
-}
-
 /* HEADER */
 .page-header h1 {
-    font-size: 28px;
+    font-size: 35px;
     margin-bottom: 20px;
     color: #111;
+    font-weight: 700;
+    text-align: left;
+}
+.card {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+.transaction-list li {
+    transition: 0.2s;
 }
 
+.transaction-list li:hover {
+    background: #f9fafb;
+    transform: translateX(4px);
+}
+.user-card {
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.progress-bar div {
+    background: linear-gradient(90deg, #22c55e, #4ade80);
+}
 /* PROFILE CARD */
 .profile-card-new {
     width: 100%;     /* FULL WIDTH */
@@ -993,6 +1021,10 @@ a:active {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
+}
+.sidebar {
+    width: 260px;
+    min-width: 260px;   /* prevent shrinking */
 }
 
 /* BUTTON STYLE */
@@ -1195,4 +1227,617 @@ a:active {
 .auth-card {
     width: 500px;
     max-width: 90%;
+}
+.dashboard {
+    padding: 20px;
+}
+
+.dash-title {
+    font-size: 26px;
+    font-weight: 600;
+}
+
+.welcome {
+    color: gray;
+    margin-bottom: 20px;
+}
+
+/* CARDS */
+.cards {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.card {
+    flex: 1;
+    padding: 20px;
+    border-radius: 14px;
+    color: white;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+.card h3 {
+    margin-bottom: 10px;
+}
+
+.card p {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* COLORS */
+.income {
+    background: linear-gradient(135deg, #4caf50, #2ecc71);
+}
+
+.expense {
+    background: linear-gradient(135deg, #f44336, #ff6b6b);
+}
+
+.savings {
+    background: linear-gradient(135deg, #2196f3, #4dabf7);
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+/* BOX */
+.box {
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* TRANSACTIONS */
+#transactionsList li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+/* GOALS */
+.goal {
+    margin-bottom: 15px;
+}
+
+.progress {
+    background: #eee;
+    height: 8px;
+    border-radius: 10px;
+}
+
+.progress div {
+    height: 100%;
+    background: #4caf50;
+    border-radius: 10px;
+}
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    width: 100%;
+}
+* {
+    box-sizing: border-box;
+}
+/* HEADER OUTSIDE */
+.page-header {
+    padding: 20px 30px;
+}
+
+/* MAIN BOX */
+.dashboard-wrapper {
+    background: transparent;   /* 🔥 remove box feeling */
+    margin: 0;
+    padding: 0;
+    margin: 0 30px 30px;
+    padding: 25px;
+    border-radius: 16px;
+}
+.page-container {
+    width: 100%;
+    max-width: none;
+    padding: 20px 30px;
+}
+
+/* PROFILE */
+.profile-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #fff;
+    padding: 15px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+
+/* CARDS */
+
+
+/* GRID */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+/* CARD STYLE */
+.card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 14px;
+}
+/* MAKE CARDS COMPACT */
+.card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    height: fit-content;   /* 🔥 IMPORTANT FIX */
+}
+.transaction-list {
+    width: 100%;
+    padding: 0;
+}
+
+/* REMOVE EXTRA SPACE */
+.transaction-list {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+/* ================= FINAL DASHBOARD FIX (ONLY ADD) ================= */
+
+/* FIX TRANSACTION ICON VISIBILITY */
+.txn-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* COLORS */
+.txn-icon.income {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.txn-icon.expense {
+    background: #ffebee;
+    color: #c62828;
+}
+
+/* ALIGN LEFT SIDE PROPERLY */
+.txn-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* FIX TEXT SPACING */
+.txn-title {
+    font-weight: 200;
+    margin: 0;
+    font-size: 18px;
+    color: #1f2937; 
+}
+.transaction-list li {
+    padding: 16px 0;
+}
+.transaction-list small {
+    font-size: 13px;
+    color: #777;
+}
+
+/* AMOUNT */
+.plus, .minus {
+    font-size: 18px;      /* 🔥 bigger amount */
+    font-weight: 700;
+}
+
+/* COLORS */
+.plus {
+    color: #2ecc71;
+}
+
+.minus {
+    color: #e74c3c;
+}
+
+/* FIX EMPTY CARD HEIGHT ISSUE */
+.card {
+    min-height: 280px;   /* prevents too much empty space */
+}
+
+/* FIX GOALS SPACING */
+.goal-item {
+    margin-bottom: 18px;
+}
+
+/* SMOOTH PROGRESS */
+.progress-bar div {
+    transition: width 0.4s ease;
+}
+
+/* REMOVE EXTRA GAP IN LIST */
+.transaction-list li {
+    padding: 14px 0;
+}
+
+.transaction-list small {
+    color: #666;   /* date visible */
+}
+.txn-title {
+    font-size: 18px;
+    font-weight: 500;
+}
+/* FIX GOALS TEXT */
+.goal-header span {
+    color: #111;
+}
+
+.goal-item small {
+    color: #666;
+}
+/* FIX TRANSACTION EXPAND */
+.transaction-list {
+    max-height: none !important;
+    overflow: visible !important;
+}
+
+/* REMOVE HEIGHT RESTRICTION */
+.card {
+    height: auto !important;
+}
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 25px;
+    margin-top: 30px;
+}
+
+/* 🔥 FULL WIDTH DASHBOARD FIX */
+.page-container {
+    width: 100%;
+    padding: 20px 30px;
+    box-sizing: border-box;
+}
+.card {
+    background: white;
+    padding: 22px;
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    margin-top: 20px;
+}
+.dash-card span {
+    font-size: 34px;   /* 🔥 BIG ICON */
+    opacity: 0.9;
+}
+
+.dash-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 28px 30px;
+    border-radius: 18px;
+
+    color: white;
+    font-weight: 500;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+
+.dash-card:hover {
+    transform: translateY(-5px);
+}
+.dash-card h4 {
+    font-size: 20px;
+    opacity: 0.9;
+    margin-bottom: 8px;
+}
+
+.dash-card p {
+    font-size: 30px;   /* 🔥 BIG NUMBER */
+    font-weight: bold;
+}
+.transaction-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.txn-left small {
+    color: #888;
+    font-size: 12px;
+}
+
+/* ICON IMPROVEMENT */
+.txn-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+}
+.goal-item {
+    margin-bottom: 18px;
+}
+
+.goal-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+/* TITLE */
+.goal-header span:first-child {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+/* % TEXT */
+.goal-header span:last-child {
+    font-size: 14px;
+    font-weight: 600;
+    color: #444;
+}
+
+/* AMOUNT TEXT */
+.goal-item small {
+    font-size: 13px;
+    color: #666;
+}
+
+.progress-bar {
+    height: 10px;                 /* 🔥 thicker */
+    border-radius: 10px;
+    background: #eee;
+    margin: 6px 0;
+}
+
+.progress-bar div {
+    height: 100%;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #2ecc71, #27ae60);
+}
+
+.welcome-text {
+    color: #777;
+    margin-top: -5px;
+    font-size:25px;
+}
+/* ===== PROFILE HEADER ===== */
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    background: white;
+    padding: 18px 22px;
+    border-radius: 16px;
+
+    margin-bottom: 25px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+.profile-header img {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+
+    object-fit: cover;      /* 🔥 FIX BLUR */
+    image-rendering: auto;  /* smoother */
+
+    border: 2px solid #fff; /* clean look */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.profile-header img {
+    transition: 0.3s;
+}
+
+.profile-header img:hover {
+    transform: scale(1.08);
+}
+
+.profile-header h2 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.profile-header p {
+    color: #666;
+    margin: 0;
+    font-size: 20px;
+}
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;  
+}
+html, body {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.app {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* MAIN CONTENT AREA */
+.main-content {
+    flex: 1;
+    width: calc(100% - 260px);  /* 🔥 key fix */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* REMOVE SIDE GAP */
+.page-container {
+    width: 100%;
+    max-width: none;
+}
+/* HEADER */
+.page-header {
+    padding: 20px 30px;
+}
+
+/* MAIN BOX */
+.dashboard-wrapper {
+    background: #f8f9fc;
+    margin: 0 30px 30px;
+    padding: 25px;
+    border-radius: 16px;
+}
+
+/* PROFILE */
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+
+/* GRID */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 25px;   /* more breathing space */
+    margin-top: 25px;
+}
+
+/* CARDS */
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+/* BUTTON */
+.view-btn {
+    border: none;
+    background: none;
+    color: #4f7cff;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 20px;
+}
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin-bottom: 15px;
+}
+
+.card-header h3 {
+    font-size: 30px;
+    font-weight:700;
+    /* color: #222; */
+    color: #111827;
+}
+
+/* View All button */
+.card-header span {
+    font-size: 20px;
+    color: #4a6cf7;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.card-header span:hover {
+    text-decoration: underline;
+}
+.transaction-list span {
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+.transaction-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.transaction-list li:hover {
+    background: #f9fafb;
+    transform: translateX(5px);
+}
+
+/* ===== DATE LITTLE BIGGER ===== */
+.txn-left small {
+    font-size: 16px;
+    color: #6b7280;
+}
+
+/* ===== AMOUNT BIG ===== */
+.transaction-list span {
+    font-size: 20px;
+    font-weight:500;
+}
+
+/* ===== GOALS HEADING SMALLER ===== */
+.card-header h3 {
+    font-size: 24px;
+    font-weight: 500;
+    font-style: normal;
+}
+
+/* ===== GOAL TITLE ===== */
+.goal-header span:first-child {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+/* ===== GOAL AMOUNT TEXT ===== */
+.goal-item small {
+    font-size: 18px;
+    color: #555;
+}
+
+/* ===== PROGRESS BAR THICK ===== */
+.progress-bar {
+    height: 10px;
 }

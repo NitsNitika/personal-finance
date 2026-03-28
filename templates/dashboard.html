@@ -4,66 +4,193 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 
-<div class="page-container">
+<!-- ✅ DASHBOARD TITLE OUTSIDE -->
+<div class="page-header">
+    <h1>Dashboard</h1>
+</div>
 
-  <!-- HEADER -->
-  <div class="page-header">
-    <h1>User Profile</h1>
+<!-- ✅ MAIN CONTAINER -->
+<div class="dashboard-wrapper">
+
+  <!-- PROFILE HEADER -->
+  <div class="profile-header">
+      <img id="userAvatar" src="/static/images/default.png" alt="User">
+
+      <div>
+          <h2>Hello <span id="userName">User</span> 👋</h2>
+          <p>Welcome back!</p>
+      </div>
   </div>
 
-  <!-- PROFILE CARD -->
-  <div class="profile-card-new">
+  <!-- TOP CARDS -->
+  <div class="dashboard-cards">
 
-    <div class="profile-top">
-      {% if user['profile_pic'] %}
-        <img src="{{ url_for('static', filename='uploads/' + user['profile_pic']) }}" class="avatar-img">
-      {% else %}
-        <div class="avatar-circle">Profile</div>
-      {% endif %}
-
-      <h2>{{ user['name'] }}</h2>
-      <p>{{ user['email'] }}</p>
+    <div class="dash-card income">
+      <div>
+        <h4>Total Income</h4>
+        <p id="income">₹0</p>
+      </div>
+      <span>💰</span>
     </div>
 
-    <!-- ACTION BUTTONS -->
-    <div class="profile-grid">
+    <div class="dash-card expense">
+      <div>
+        <h4>Total Expenses</h4>
+        <p id="expenses">₹0</p>
+      </div>
+      <span>💸</span>
+    </div>
 
-      <a href="{{ url_for('edit_profile') }}" class="card-btn primary">
-        Edit Profile ✏️
-      </a>
+    <div class="dash-card savings">
+      <div>
+        <h4>Total Savings</h4>
+        <p id="savings">₹0</p>
+      </div>
+      <span>📈</span>
+    </div>
 
-      <a href="{{ url_for('change_password') }}" class="card-btn outline">
-        Change Password 🔒
-      </a>
+  </div>
 
-      <a href="{{ url_for('income_summary') }}" class="card-btn">
-        Income 💰
-      </a>
+  <!-- GRID -->
+  <div class="dashboard-grid">
 
-      <a href="{{ url_for('expense_management') }}" class="card-btn">
-        Expenses 💸
-      </a>
+    <!-- TRANSACTIONS -->
+    <div class="card">
+      <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <h3>Recent Transactions</h3>
+        <button id="toggleBtn" class="view-btn">View All →</button>
+      </div>
 
-      <a href="{{ url_for('savings') }}" class="card-btn">
-        Savings 💰
-      </a>
+      <ul id="transactionsList" class="transaction-list"></ul>
+    </div>
 
-      <a href="{{ url_for('financial_analytics') }}" class="card-btn">
-        Analytics 📊
-      </a>
-
-      <a href="{{ url_for('goals_page') }}" class="card-btn">
-        Goals 🎯
-      </a>
-
-      <a href="{{ url_for('logout') }}" class="card-btn danger">
-        Logout 🚪
-      </a>
-
+    <!-- GOALS -->
+    <div class="card">
+      <div class="card-header">
+        <h3>Goals Progress</h3>
+      </div>
+      <div id="goalsList"></div>
     </div>
 
   </div>
 
 </div>
+
+<script>
+
+// GLOBAL
+let showAll = false;
+let allTransactions = [];
+
+// LOAD DATA
+async function loadDashboard() {
+    console.log("Dashboard loaded");
+
+    try {
+        const res = await fetch("/dashboard-data");
+        const data = await res.json();
+
+        if (!data || data.error) return;
+
+        // PROFILE
+        document.getElementById("userName").innerText = data.user_name || "User";
+        document.getElementById("userAvatar").src =
+            (data.user_image || "/static/images/default.png") + "?t=" + new Date().getTime();
+
+        // TOTALS
+        document.getElementById("income").innerText = "₹" + (data.income || 0);
+        document.getElementById("expenses").innerText = "₹" + (data.expenses || 0);
+        document.getElementById("savings").innerText = "₹" + (data.savings || 0);
+
+        // TRANSACTIONS
+        allTransactions = data.transactions || [];
+        renderTransactions();
+
+        document.getElementById("toggleBtn").onclick = () => {
+            showAll = !showAll;
+            renderTransactions();
+        };
+
+        // GOALS
+        const goalsDiv = document.getElementById("goalsList");
+        goalsDiv.innerHTML = "";
+
+        if (!data.goals || data.goals.length === 0) {
+            goalsDiv.innerHTML = "<p>No goals added</p>";
+        } else {
+            data.goals.forEach(g => {
+                const saved = g.saved_amount || 0;
+                const target = g.target_amount || 0;
+
+                const percent = target > 0
+                    ? Math.min((saved / target) * 100, 100).toFixed(0)
+                    : 0;
+
+                goalsDiv.innerHTML += `
+                    <div class="goal-item">
+                        <div class="goal-header">
+                            <span>${g.title}</span>
+                            <span>${percent}%</span>
+                        </div>
+
+                        <div class="progress-bar">
+                            <div style="width:${percent}%"></div>
+                        </div>
+
+                        <small>₹${saved} / ₹${target}</small>
+                    </div>
+                `;
+            });
+        }
+
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+// RENDER TRANSACTIONS
+function renderTransactions() {
+    const list = document.getElementById("transactionsList");
+    const btn = document.getElementById("toggleBtn");
+
+    list.innerHTML = "";
+
+    if (!allTransactions.length) {
+        list.innerHTML = "<p>No transactions</p>";
+        return;
+    }
+
+    const dataToShow = showAll ? allTransactions : allTransactions.slice(0, 5);
+
+    dataToShow.forEach(t => {
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+            <div class="txn-left">
+                <div class="txn-icon ${t.type}">
+                    ${t.type === 'income' ? '↑' : '↓'}
+                </div>
+
+                <div>
+                    <p class="txn-title">${t.title}</p>
+                    <small>${t.date}</small>
+                </div>
+            </div>
+
+            <span class="${t.type === 'income' ? 'plus' : 'minus'}">
+                ${t.type === 'income' ? '+' : '-'}₹${t.amount}
+            </span>
+        `;
+
+        list.appendChild(li);
+    });
+
+    btn.innerText = showAll ? "View Less ↑" : "View All →";
+}
+
+// INIT
+loadDashboard();
+
+</script>
 
 {% endblock %}
