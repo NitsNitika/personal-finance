@@ -1,8 +1,7 @@
 print("Flask imported successfully")
 from flask import jsonify
-from flask import Flask, render_template, request, redirect, url_for, session, flash
 import json
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import sqlite3
 import uuid
 import random
@@ -378,7 +377,6 @@ def add_profile_pic_column():
 add_profile_pic_column()
 
 # ---------------- LOGIN ----------------
-@app.route("/", methods=["GET", "POST"])
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -1096,30 +1094,47 @@ def save_goals(goals):
 # -------- GOALS PAGE --------
 @app.route("/goals")
 def goals_page():
-    goals = load_goals()
+    if "user_id" not in session:
+        return redirect(url_for("login"))
 
-    # ✅ SAFE CALCULATION (prevents Jinja error)
-    total = sum(g.get("saved", 0) for g in goals)
-    active = len(goals)
+    all_goals = load_goals()
 
-    return render_template("goals.html", goals=goals, total=total, active=active)
+    # 🔥 AUTO FIX OLD DATA
+    for g in all_goals:
+        if "user_id" not in g:
+            g["user_id"] = session["user_id"]
 
+    save_goals(all_goals)
 
-# -------- ADD GOAL --------
+    user_goals = [
+        g for g in all_goals
+        if g.get("user_id") == session["user_id"]
+    ]
+
+    total = sum(g.get("saved", 0) for g in user_goals)
+    active = len(user_goals)
+
+    return render_template(
+        "goals.html",
+        goals=user_goals,
+        total=total,
+        active=active
+    )
+
 @app.route("/add_goal", methods=["POST"])
 def add_goal():
+    if "user_id" not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+
     data = request.json
     goals = load_goals()
 
-    # VALIDATION
     if not data.get("title") or not data.get("target"):
         return jsonify({"error": "Missing fields"})
 
-    if float(data.get("target")) <= 0:
-        return jsonify({"error": "Target must be greater than 0"})
-
     new_goal = {
-        "id": len(goals) + 1,
+        "id": int(time.time()),  # unique id
+        "user_id": session["user_id"],   # ✅ IMPORTANT
         "title": data["title"],
         "target": float(data["target"]),
         "saved": 0,
@@ -1130,33 +1145,29 @@ def add_goal():
     goals.append(new_goal)
     save_goals(goals)
 
-    # ✅ IMPORTANT RESPONSE
-    return jsonify({
-        "success": True,
-        "goal": new_goal
-    })
+    return jsonify({"success": True, "goal": new_goal})
 
 # -------- ADD MONEY --------
 @app.route("/update_goal/<int:id>", methods=["POST"])
 def update_goal(id):
+    if "user_id" not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+
     data = request.json
     amount = float(data.get("amount", 0))
 
     goals = load_goals()
 
     for g in goals:
-        if g["id"] == id:
+        if g["id"] == id and g["user_id"] == session["user_id"]:
 
-            # ❌ INVALID INPUT
             if amount <= 0:
                 return jsonify({"error": "Invalid amount"})
 
-            # ❌ OVERFLOW PREVENTION
-            if g.get("saved", 0) + amount > g.get("target", 0):
+            if g["saved"] + amount > g["target"]:
                 return jsonify({"error": "Amount exceeds target"})
 
-            # ✅ UPDATE
-            g["saved"] = g.get("saved", 0) + amount
+            g["saved"] += amount
 
     save_goals(goals)
     return jsonify({"success": True})
@@ -1165,9 +1176,15 @@ def update_goal(id):
 # -------- DELETE GOAL --------
 @app.route("/delete_goal/<int:id>", methods=["POST"])
 def delete_goal(id):
+    if "user_id" not in session:
+        return jsonify({"error": "Unauthorized"}), 401
+
     goals = load_goals()
 
-    goals = [g for g in goals if g["id"] != id]
+    goals = [
+        g for g in goals
+        if not (g["id"] == id and g["user_id"] == session["user_id"])
+    ]
 
     save_goals(goals)
     return jsonify({"success": True})
@@ -1216,15 +1233,19 @@ def dashboard_data():
 
     # ================= GOALS =================
     goals_data = load_goals()
-    goals = []
-
-    for g in goals_data:
-        goals.append({
-            "title": g.get("title"),
-            "target_amount": g.get("target", 0),
-            "saved_amount": g.get("saved", 0)
-        })
-
+    user_goals = [
+        g for g in goals_data
+        if g.get("user_id") == session["user_id"]
+        ]
+    # ✅ ALWAYS DEFINE goals
+    goals = [
+    {
+        "title": g.get("title"),
+        "target_amount": g.get("target", 0),
+        "saved_amount": g.get("saved", 0)
+    }
+    for g in user_goals
+]
     conn.close()
 
     # ================= RESPONSE =================
@@ -1239,6 +1260,15 @@ def dashboard_data():
         "user_name": user["name"] if user else "User",
         "user_image": f"/static/uploads/{user['profile_pic']}" if user and user["profile_pic"] else "/static/images/default.png"
     })
+#===================WELCOME PAGE==============
+# @app.route("/welcome")
+# def welcome():
+#     return render_template("welcome.html")
+
+# ================= HOME PAGE =================
+@app.route("/")
+def index():
+    return render_template("welcome.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
